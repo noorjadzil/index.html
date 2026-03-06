@@ -1,297 +1,207 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cyber Canteen POS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bomberman Web</title>
 
 <style>
+
 body{
-    margin:0;
-    background:black;
-    color:#00ff88;
-    font-family:monospace;
-}
-header{
+    background:#111;
+    color:white;
     text-align:center;
-    padding:15px;
-    font-size:20px;
-    border-bottom:1px solid #00ff88;
+    font-family:Arial;
 }
-.cursor{
-    display:inline-block;
-    width:10px;
-    background:#00ff88;
-    animation:blink 1s infinite;
-}
-@keyframes blink{
-    0%,50%,100%{opacity:1;}
-    25%,75%{opacity:0;}
-}
-nav{
-    display:flex;
-    justify-content:space-around;
-    border-bottom:1px solid #00ff88;
-}
-nav button{
-    flex:1;
-    padding:10px;
+
+canvas{
     background:black;
-    color:#00ff88;
-    border:none;
-}
-nav button:hover{
-    background:#003322;
-}
-section{
-    display:none;
-    padding:10px;
-}
-.active{
-    display:block;
-}
-.card{
-    border:1px solid #00ff88;
-    padding:10px;
-    margin:5px 0;
-}
-input,select{
-    width:100%;
-    padding:8px;
-    margin:5px 0;
-    background:black;
-    color:#00ff88;
-    border:1px solid #00ff88;
-}
-button.action{
-    background:#00ff88;
-    color:black;
-    padding:8px;
-    border:none;
-    width:100%;
-    margin-top:5px;
-}
-.product-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:5px;
-}
-.product{
-    border:1px solid #00ff88;
-    padding:10px;
-    text-align:center;
-}
-.small{
-    font-size:12px;
-}
-.total-box{
-    border-top:1px solid #00ff88;
-    padding-top:10px;
     margin-top:10px;
+    border:2px solid white;
 }
+
 </style>
+
 </head>
+
 <body>
 
-<header>
-CYBER CANTEEN POS <span class="cursor"></span>
-</header>
+<h2>Bomberman Web</h2>
+<p>Gerak: Arrow Keys | Bom: Spasi</p>
 
-<nav>
-<button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('kasir')">Kasir</button>
-<button onclick="show('produk')">Produk</button>
-<button onclick="show('laporan')">Laporan</button>
-</nav>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="active">
-<h3>Status Sistem</h3>
-<div id="dashData"></div>
-</section>
-
-<!-- KASIR -->
-<section id="kasir">
-<h3>Kasir</h3>
-<div class="product-grid" id="produkList"></div>
-
-<h4>Keranjang</h4>
-<div id="cart"></div>
-
-<div class="total-box">
-Total: Rp <span id="total">0</span>
-<input type="number" id="bayar" placeholder="Uang Bayar">
-<div>Kembalian: Rp <span id="kembali">0</span></div>
-<button class="action" onclick="simpanTransaksi()">Simpan Transaksi</button>
-</div>
-</section>
-
-<!-- PRODUK -->
-<section id="produk">
-<h3>Manajemen Produk (PIN 1234)</h3>
-<input type="password" id="pin" placeholder="Masukkan PIN">
-<button class="action" onclick="cekPin()">Masuk</button>
-
-<div id="adminArea" style="display:none;">
-<input type="text" id="namaProduk" placeholder="Nama Produk">
-<input type="number" id="hargaProduk" placeholder="Harga">
-<input type="number" id="stokProduk" placeholder="Stok">
-<select id="kategoriProduk">
-<option>Makanan</option>
-<option>Minuman</option>
-<option>Snack</option>
-</select>
-<button class="action" onclick="tambahProduk()">Tambah Produk</button>
-<div id="listAdmin"></div>
-</div>
-</section>
-
-<!-- LAPORAN -->
-<section id="laporan">
-<h3>Laporan Hari Ini</h3>
-<div id="laporanData"></div>
-</section>
+<canvas id="game" width="480" height="480"></canvas>
 
 <script>
-let produk = JSON.parse(localStorage.getItem("produk")) || [];
-let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
-let cart = [];
 
-function simpanData(){
-    localStorage.setItem("produk", JSON.stringify(produk));
-    localStorage.setItem("transaksi", JSON.stringify(transaksi));
+const canvas = document.getElementById("game")
+const ctx = canvas.getContext("2d")
+
+const tile = 48
+const size = 10
+
+let map = []
+
+let player = {
+x:1,
+y:1
 }
 
-function show(id){
-    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    render();
+let bombs = []
+let explosions = []
+
+function createMap(){
+
+for(let y=0;y<size;y++){
+
+let row=[]
+
+for(let x=0;x<size;x++){
+
+if(x==0 || y==0 || x==size-1 || y==size-1){
+row.push(1)
 }
 
-function tambahProduk(){
-    let p={
-        nama:namaProduk.value,
-        harga:Number(hargaProduk.value),
-        stok:Number(stokProduk.value),
-        kategori:kategoriProduk.value
-    };
-    produk.push(p);
-    simpanData();
-    render();
+else if(x%2==0 && y%2==0){
+row.push(1)
 }
 
-function renderProduk(){
-    produkList.innerHTML="";
-    produk.forEach((p,i)=>{
-        produkList.innerHTML+=`
-        <div class="product" onclick="addCart(${i})">
-        ${p.nama}<br>
-        Rp ${p.harga}<br>
-        <span class="small">Stok: ${p.stok}</span>
-        </div>`;
-    });
+else if(Math.random()<0.3 && !(x<=2 && y<=2)){
+row.push(2)
 }
 
-function addCart(i){
-    if(produk[i].stok<=0){alert("Stok habis");return;}
-    cart.push(produk[i]);
-    produk[i].stok--;
-    simpanData();
-    renderCart();
-    renderProduk();
+else{
+row.push(0)
 }
 
-function renderCart(){
-    cartDiv=document.getElementById("cart");
-    cartDiv.innerHTML="";
-    let total=0;
-    cart.forEach(c=>{
-        cartDiv.innerHTML+=`${c.nama} - Rp ${c.harga}<br>`;
-        total+=c.harga;
-    });
-    document.getElementById("total").innerText=total;
 }
 
-bayar.oninput=function(){
-    let total=Number(document.getElementById("total").innerText);
-    let uang=Number(this.value);
-    kembali.innerText=uang-total;
+map.push(row)
 }
 
-function simpanTransaksi(){
-    if(cart.length==0)return;
-    transaksi.push({
-        tanggal:new Date().toLocaleDateString(),
-        total:Number(total.innerText)
-    });
-    cart=[];
-    bayar.value="";
-    kembali.innerText="0";
-    simpanData();
-    render();
-    alert("Transaksi disimpan");
 }
 
-function cekPin(){
-    if(pin.value=="1234"){
-        adminArea.style.display="block";
-        renderAdmin();
-    }else{
-        alert("PIN salah");
-    }
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+for(let y=0;y<size;y++){
+for(let x=0;x<size;x++){
+
+if(map[y][x]==1){
+ctx.fillStyle="gray"
+ctx.fillRect(x*tile,y*tile,tile,tile)
 }
 
-function renderAdmin(){
-    listAdmin.innerHTML="";
-    produk.forEach((p,i)=>{
-        listAdmin.innerHTML+=`
-        <div class="card">
-        ${p.nama} - Rp ${p.harga} - Stok ${p.stok}
-        <button onclick="hapusProduk(${i})">Hapus</button>
-        </div>`;
-    });
+if(map[y][x]==2){
+ctx.fillStyle="brown"
+ctx.fillRect(x*tile,y*tile,tile,tile)
 }
 
-function hapusProduk(i){
-    produk.splice(i,1);
-    simpanData();
-    renderAdmin();
-    renderProduk();
+}
 }
 
-function renderDashboard(){
-    let hariIni=new Date().toLocaleDateString();
-    let total=0;
-    let jumlah=0;
-    transaksi.forEach(t=>{
-        if(t.tanggal==hariIni){
-            total+=t.total;
-            jumlah++;
-        }
-    });
-    dashData.innerHTML=`
-    Total Hari Ini: Rp ${total}<br>
-    Jumlah Transaksi: ${jumlah}
-    `;
+ctx.fillStyle="blue"
+ctx.fillRect(player.x*tile+8,player.y*tile+8,32,32)
+
+bombs.forEach(b=>{
+ctx.fillStyle="black"
+ctx.beginPath()
+ctx.arc(b.x*tile+24,b.y*tile+24,10,0,Math.PI*2)
+ctx.fill()
+})
+
+explosions.forEach(e=>{
+ctx.fillStyle="orange"
+ctx.fillRect(e.x*tile,e.y*tile,tile,tile)
+})
+
 }
 
-function renderLaporan(){
-    let hariIni=new Date().toLocaleDateString();
-    let total=0;
-    transaksi.forEach(t=>{
-        if(t.tanggal==hariIni) total+=t.total;
-    });
-    laporanData.innerHTML=`Omzet Hari Ini: Rp ${total}`;
+function move(dx,dy){
+
+let nx=player.x+dx
+let ny=player.y+dy
+
+if(map[ny][nx]==0){
+player.x=nx
+player.y=ny
 }
 
-function render(){
-    renderProduk();
-    renderCart();
-    renderDashboard();
-    renderLaporan();
 }
 
-render();
+function placeBomb(){
+
+bombs.push({
+x:player.x,
+y:player.y
+})
+
+let index=bombs.length-1
+
+setTimeout(()=>{
+explode(index)
+},1000)
+
+}
+
+function explode(i){
+
+let b=bombs[i]
+
+let dirs=[
+[0,0],
+[1,0],
+[-1,0],
+[0,1],
+[0,-1]
+]
+
+dirs.forEach(d=>{
+
+let x=b.x+d[0]
+let y=b.y+d[1]
+
+explosions.push({x,y})
+
+if(map[y][x]==2){
+map[y][x]=0
+}
+
+if(player.x==x && player.y==y){
+alert("Game Over")
+location.reload()
+}
+
+})
+
+setTimeout(()=>{
+explosions=[]
+},300)
+
+bombs.splice(i,1)
+
+}
+
+document.addEventListener("keydown",e=>{
+
+if(e.key=="ArrowLeft") move(-1,0)
+if(e.key=="ArrowRight") move(1,0)
+if(e.key=="ArrowUp") move(0,-1)
+if(e.key=="ArrowDown") move(0,1)
+
+if(e.code=="Space") placeBomb()
+
+})
+
+function gameLoop(){
+
+draw()
+requestAnimationFrame(gameLoop)
+
+}
+
+createMap()
+gameLoop()
+
 </script>
 
 </body>
