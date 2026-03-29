@@ -1,8 +1,9 @@
 {
   "name": "Input Jajan",
   "short_name": "Jajan",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#1e3a8a"
 }
