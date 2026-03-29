@@ -1,22 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bomberman Web</title>
+<title>Input Jajan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-
 body{
-    background:#111;
-    color:white;
-    text-align:center;
-    font-family:Arial;
+font-family: 'Segoe UI', Arial, sans-serif;
+color:#0f172a;
+margin:0;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
 }
 
-canvas{
-    background:black;
-    margin-top:10px;
-    border:2px solid white;
+.container{
+max-width:420px;
+margin:auto;
+padding:15px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+h2{
+text-align:center;
+margin-bottom:15px;
+color:#1e3a8a;
+font-weight:800;
+letter-spacing:0.5px;
+}
+
+label{
+font-weight:700;
+font-size:13px;
+color:#334155;
+margin-top:8px;
+display:block;
+}
+
+select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+margin-bottom:15px;
+font-size:16px;
+font-weight:600;
+color:#1e293b;
+background:#f8fafc;
+}
+
+.table{
+margin-top:10px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 0;
+border-bottom:1px solid #eee;
+}
+
+.row:last-child{
+border:none;
+}
+
+.item{
+font-size:15px;
+color:#0f172a;
+font-weight:600;
+}
+
+input{
+width:80px;
+padding:8px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+text-align:center;
+font-size:16px;
+font-weight:600;
+color:#1e293b;
+background:#f8fafc;
+}
+
+button{
+width:100%;
+padding:15px;
+font-size:18px;
+background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+color:white;
+border:none;
+border-radius:12px;
+margin-top:20px;
+font-weight:700;
+letter-spacing:0.5px;
+transition:0.2s;
+box-shadow:0 6px 15px rgba(30,58,138,0.3);
+}
+
+button:active{
+transform:scale(0.97);
+}
+
+button:disabled{
+background:gray;
 }
 
 </style>
@@ -25,182 +116,134 @@ canvas{
 
 <body>
 
-<h2>Bomberman Web</h2>
-<p>Gerak: Arrow Keys | Bom: Spasi</p>
+<div class="container">
+<div class="card">
 
-<canvas id="game" width="480" height="480"></canvas>
+<h2>Input Jajan</h2>
+
+<label>Jenis</label>
+<select id="jenis">
+<option value="Masuk">Jajan Masuk</option>
+<option value="Sisa">Jajan Sisa</option>
+</select>
+
+<label>Tempat</label>
+<select id="tempat">
+<option>Ikhwan</option>
+<option>Akhwat</option>
+</select>
+
+<div class="table">
+
+<div class="row">
+<span class="item">Tahu Batagor</span>
+<input type="number" id="tahu_batagor">
+</div>
+
+<div class="row">
+<span class="item">Cilok</span>
+<input type="number" id="cilok">
+</div>
+
+<div class="row">
+<span class="item">Cimol Cireng</span>
+<input type="number" id="cimol_cireng">
+</div>
+
+<div class="row">
+<span class="item">Kripik Kolek</span>
+<input type="number" id="kripik_kolek">
+</div>
+
+<div class="row">
+<span class="item">Piscok Molen</span>
+<input type="number" id="piscok_molen">
+</div>
+
+<div class="row">
+<span class="item">Dimsum Maklor Moci</span>
+<input type="number" id="dimsum_maklor_moci">
+</div>
+
+<div class="row">
+<span class="item">Kebab</span>
+<input type="number" id="kebab">
+</div>
+
+<div class="row">
+<span class="item">Sosis Roti Gurita</span>
+<input type="number" id="sosis_roti_gurita">
+</div>
+
+</div>
+
+<button id="tombol" onclick="kirim()">Simpan</button>
+
+</div>
+</div>
 
 <script>
 
-const canvas = document.getElementById("game")
-const ctx = canvas.getContext("2d")
+async function kirim(){
 
-const tile = 48
-const size = 10
+var tombol=document.getElementById("tombol");
 
-let map = []
+if(tombol.disabled) return; // anti double klik
 
-let player = {
-x:1,
-y:1
-}
 
-let bombs = []
-let explosions = []
+tombol.innerText="Mengirim...";
+tombol.disabled=true;
 
-function createMap(){
+var tempat=document.getElementById("tempat").value;
+var jenis=document.getElementById("jenis").value;
 
-for(let y=0;y<size;y++){
+await kirimBarang("Tahu Batagor", document.getElementById("tahu_batagor").value, tempat, jenis);
+await kirimBarang("Cilok", document.getElementById("cilok").value, tempat, jenis);
+await kirimBarang("Cimol Cireng", document.getElementById("cimol_cireng").value, tempat, jenis);
+await kirimBarang("Kripik Kolek", document.getElementById("kripik_kolek").value, tempat, jenis);
+await kirimBarang("Piscok Molen", document.getElementById("piscok_molen").value, tempat, jenis);
+await kirimBarang("Dimsum Maklor Moci", document.getElementById("dimsum_maklor_moci").value, tempat, jenis);
+await kirimBarang("Kebab", document.getElementById("kebab").value, tempat, jenis);
+await kirimBarang("Sosis Roti Gurita", document.getElementById("sosis_roti_gurita").value, tempat, jenis);
 
-let row=[]
 
-for(let x=0;x<size;x++){
+tombol.innerText="Simpan";
+tombol.disabled=false;
 
-if(x==0 || y==0 || x==size-1 || y==size-1){
-row.push(1)
-}
+kosongkan();
 
-else if(x%2==0 && y%2==0){
-row.push(1)
-}
-
-else if(Math.random()<0.3 && !(x<=2 && y<=2)){
-row.push(2)
-}
-
-else{
-row.push(0)
-}
+alert("Data berhasil tersimpan");
 
 }
 
-map.push(row)
-}
+async function kirimBarang(barang,jumlah,tempat,jenis){
 
-}
+if(jumlah=="" || jumlah==0)return;
 
-function draw(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-for(let y=0;y<size;y++){
-for(let x=0;x<size;x++){
-
-if(map[y][x]==1){
-ctx.fillStyle="gray"
-ctx.fillRect(x*tile,y*tile,tile,tile)
-}
-
-if(map[y][x]==2){
-ctx.fillStyle="brown"
-ctx.fillRect(x*tile,y*tile,tile,tile)
-}
-
-}
-}
-
-ctx.fillStyle="blue"
-ctx.fillRect(player.x*tile+8,player.y*tile+8,32,32)
-
-bombs.forEach(b=>{
-ctx.fillStyle="black"
-ctx.beginPath()
-ctx.arc(b.x*tile+24,b.y*tile+24,10,0,Math.PI*2)
-ctx.fill()
+await fetch("https://script.google.com/macros/s/AKfycbxj_nRBkdTPoASNFe1zCRZAYDbM8ihnO9Hnjp0-ewsma3jZk42I-Z7XzpSfDRaUZmu9/exec",{
+method:"POST",
+body: JSON.stringify({
+tempat:tempat,
+barang:barang,
+jumlah:jumlah,
+jenis:jenis
 })
-
-explosions.forEach(e=>{
-ctx.fillStyle="orange"
-ctx.fillRect(e.x*tile,e.y*tile,tile,tile)
-})
+});
 
 }
 
-function move(dx,dy){
+function kosongkan(){
 
-let nx=player.x+dx
-let ny=player.y+dy
-
-if(map[ny][nx]==0){
-player.x=nx
-player.y=ny
-}
-
-}
-
-function placeBomb(){
-
-bombs.push({
-x:player.x,
-y:player.y
-})
-
-let index=bombs.length-1
-
-setTimeout(()=>{
-explode(index)
-},1000)
+document.getElementById("tahu_batagor").value="";
+document.getElementById("cilok").value="";
+document.getElementById("cimol_cireng").value="";
+document.getElementById("kripik_kolek").value="";
+document.getElementById("piscok_molen").value="";
+document.getElementById("dimsum_maklor_moci").value="";
+document.getElementById("kebab").value="";
+document.getElementById("sosis_roti_gurita").value="";
 
 }
-
-function explode(i){
-
-let b=bombs[i]
-
-let dirs=[
-[0,0],
-[1,0],
-[-1,0],
-[0,1],
-[0,-1]
-]
-
-dirs.forEach(d=>{
-
-let x=b.x+d[0]
-let y=b.y+d[1]
-
-explosions.push({x,y})
-
-if(map[y][x]==2){
-map[y][x]=0
-}
-
-if(player.x==x && player.y==y){
-alert("Game Over")
-location.reload()
-}
-
-})
-
-setTimeout(()=>{
-explosions=[]
-},300)
-
-bombs.splice(i,1)
-
-}
-
-document.addEventListener("keydown",e=>{
-
-if(e.key=="ArrowLeft") move(-1,0)
-if(e.key=="ArrowRight") move(1,0)
-if(e.key=="ArrowUp") move(0,-1)
-if(e.key=="ArrowDown") move(0,1)
-
-if(e.code=="Space") placeBomb()
-
-})
-
-function gameLoop(){
-
-draw()
-requestAnimationFrame(gameLoop)
-
-}
-
-createMap()
-gameLoop()
 
 </script>
 
