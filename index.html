@@ -431,11 +431,17 @@ let items = d.items.map(i=>{
 if(i.detail){
 
 if(i.barang === "Tahu Batagor"){
-return `• Tahu (${i.detail.tahu || 0}) Batagor (${i.detail.batagor || 0})`;
+return `
+<div>• Tahu ${i.detail.tahu || 0}</div>
+<div>• Batagor ${i.detail.batagor || 0}</div>
+`;
 }
 
 if(i.barang === "Cimol Cireng"){
-return `• Cimol (${i.detail.cimol || 0}) Cireng (${i.detail.cireng || 0})`;
+return `
+<div>• Cimol ${i.detail.cimol || 0}</div>
+<div>• Cireng ${i.detail.cireng || 0}</div>
+`;
 }
 
 }
