@@ -11,24 +11,145 @@ font-family:'Segoe UI',Arial;
 margin:0;
 background:linear-gradient(135deg,#0f172a,#1e3a8a);
 }
-.container{max-width:420px;margin:auto;padding:10px;}
-.card{background:white;border-radius:16px;padding:15px;box-shadow:0 8px 20px rgba(0,0,0,0.2);}
-.tabs{display:flex;background:#1e3a8a;border-radius:12px 12px 0 0;overflow:hidden;margin-bottom:10px;}
-.tab-btn{flex:1;padding:12px;border:none;background:transparent;color:white;font-weight:700;}
-.tab-btn.active{background:#3b82f6;}
-h2{text-align:center;color:#1e3a8a;}
-label{font-weight:700;font-size:13px;margin-top:8px;display:block;}
-select,input[type="number"]{width:100%;padding:10px;border-radius:10px;border:1px solid #cbd5f5;margin-bottom:10px;font-weight:600;}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:8px 0;}
-.row input{width:80px;}
-button{width:100%;padding:14px;border:none;border-radius:12px;background:#1e3a8a;color:white;font-weight:700;margin-top:15px;}
-img{width:100%;border-radius:10px;margin-top:8px;}
-#catatan{width:100%;padding:12px;margin-top:6px;border-radius:10px;border:1px solid #cbd5f5;font-size:15px;font-weight:600;box-sizing:border-box;}
 
-.laporan-card{background:white;margin-top:12px;padding:12px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
-.laporan-header{font-size:18px;font-weight:700;color:#1e3a8a;margin-bottom:6px;}
-.laporan-tanggal{display:inline-block;background:#e0edff;color:#1e3a8a;padding:4px 10px;border-radius:8px;font-size:16px;font-weight:700;margin-bottom:8px;}
-.laporan-items{margin-top:6px;line-height:1.5;font-weight:600;}
+.container{
+max-width:420px;
+margin:auto;
+padding:10px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:15px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.tabs{
+display:flex;
+background:#1e3a8a;
+border-radius:12px 12px 0 0;
+overflow:hidden;
+margin-bottom:10px;
+}
+
+.tab-btn{
+flex:1;
+padding:12px;
+border:none;
+background:transparent;
+color:white;
+font-weight:700;
+}
+
+.tab-btn.active{
+background:#3b82f6;
+}
+
+h2{
+text-align:center;
+color:#1e3a8a;
+}
+
+label{
+font-weight:700;
+font-size:13px;
+margin-top:8px;
+display:block;
+}
+
+select,input[type="number"]{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+margin-bottom:10px;
+font-weight:600;
+}
+
+input[type="number"]{
+text-align:center;
+font-size:16px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #eee;
+padding:8px 0;
+}
+
+.row input{
+width:80px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#1e3a8a;
+color:white;
+font-weight:700;
+margin-top:15px;
+}
+
+img{
+width:100%;
+border-radius:10px;
+margin-top:8px;
+}
+
+#catatan{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+font-size:15px;
+font-weight:600;
+box-sizing:border-box;
+resize:none;
+}
+
+#catatan:focus{
+outline:none;
+border:2px solid #1e3a8a;
+}
+
+/* 🔥 LAPORAN STYLE BARU */
+.laporan-card{
+background:white;
+margin-top:12px;
+padding:12px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.laporan-header{
+font-size:18px;
+font-weight:700;
+color:#1e3a8a;
+margin-bottom:6px;
+}
+
+.laporan-tanggal{
+display:inline-block;
+background:#e0edff;
+color:#1e3a8a;
+padding:4px 10px;
+border-radius:8px;
+font-size:16px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.laporan-items{
+margin-top:6px;
+line-height:1.5;
+font-weight:600;
+}
 </style>
 </head>
 
@@ -64,21 +185,49 @@ img{width:100%;border-radius:10px;margin-top:8px;}
 <option>Akhwat</option>
 </select>
 
-<!-- 🔥 DIPISAH -->
-<div class="row"><span>Tahu</span><input type="number" id="tahu"></div>
-<div class="row"><span>Batagor</span><input type="number" id="batagor"></div>
-
-<div class="row"><span>Cimol</span><input type="number" id="cimol"></div>
-<div class="row"><span>Cireng</span><input type="number" id="cireng"></div>
-
+<div class="row"><span>Tahu Batagor</span><input type="number" id="tahu_batagor"></div>
+<div class="row"><span>Cilok</span><input type="number" id="cilok"></div>
+<div class="row"><span>Cimol Cireng</span><input type="number" id="cimol_cireng"></div>
 <div class="row"><span>Kripik Kolek</span><input type="number" id="kripik_kolek"></div>
 <div class="row"><span>Piscok Molen</span><input type="number" id="piscok_molen"></div>
 <div class="row"><span>Dimsum Maklor Moci</span><input type="number" id="dimsum_maklor_moci"></div>
 <div class="row"><span>Kebab</span><input type="number" id="kebab"></div>
 <div class="row"><span>Sosis Roti Gurita</span><input type="number" id="sosis_roti_gurita"></div>
+<!-- SLOT TAMBAHAN -->
+<div class="row">
+<select id="slot1">
+<option value="">-- Pilih --</option>
+<option>Tahu Batagor</option>
+<option>Cilok</option>
+<option>Cimol Cireng</option>
+<option>Kripik Kolek</option>
+<option>Piscok Molen</option>
+<option>Dimsum Maklor Moci</option>
+<option>Kebab</option>
+<option>Sosis Roti Gurita</option>
+</select>
+<input type="number" id="slot1_jumlah">
+</div>
 
-<label>Catatan</label>
-<textarea id="catatan" rows="3"></textarea>
+<div class="row">
+<select id="slot2">
+<option value="">-- Pilih --</option>
+<option>Tahu Batagor</option>
+<option>Cilok</option>
+<option>Cimol Cireng</option>
+<option>Kripik Kolek</option>
+<option>Piscok Molen</option>
+<option>Dimsum Maklor Moci</option>
+<option>Kebab</option>
+<option>Sosis Roti Gurita</option>
+</select>
+<input type="number" id="slot2_jumlah">
+</div>
+<label style="margin-top:12px;font-size:16px;font-weight:700;color:#1e3a8a;">
+Catatan
+</label>
+
+<textarea id="catatan" rows="3" placeholder="Tulis catatan..."></textarea>
 
 <button id="tombol" onclick="kirim()">Simpan</button>
 
@@ -105,23 +254,57 @@ e.target.classList.add("active");
 if(tab==="laporan") loadLaporan();
 }
 
+// FORMAT HARI
 function formatTanggal(waktu){
-let d=new Date(waktu);
-return d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+
-" - "+d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+let date = new Date(waktu);
+
+let hari = date.toLocaleDateString("id-ID",{weekday:"long"});
+let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year:"numeric"});
+
+let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+
+return `${hari}, ${tanggal} - ${jam}`;
 }
 
-// PREVIEW FOTO
+// PREVIEW
 document.getElementById("foto").addEventListener("change",function(e){
-let f=e.target.files[0];
-if(!f) return;
-let r=new FileReader();
-r.onload=e=>{
-preview.src=e.target.result;
-preview.style.display="block";
+let file=e.target.files[0];
+if(!file) return;
+
+let reader=new FileReader();
+reader.onload=function(ev){
+let img=document.getElementById("preview");
+img.src=ev.target.result;
+img.style.display="block";
 }
-r.readAsDataURL(f);
+reader.readAsDataURL(file);
 });
+
+// KOMPRES
+function kompresGambar(file){
+return new Promise(resolve=>{
+let reader=new FileReader();
+reader.onload=function(e){
+let img=new Image();
+img.src=e.target.result;
+
+img.onload=function(){
+let canvas=document.createElement("canvas");
+let maxWidth=400;
+let scale=maxWidth/img.width;
+
+canvas.width=maxWidth;
+canvas.height=img.height*scale;
+
+let ctx=canvas.getContext("2d");
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+resolve(canvas.toDataURL("image/jpeg",0.5));
+}
+}
+reader.readAsDataURL(file);
+});
+}
 
 // KIRIM
 async function kirim(){
@@ -132,64 +315,92 @@ if(tombol.disabled) return;
 tombol.innerText="Mengirim...";
 tombol.disabled=true;
 
+let tempat=document.getElementById("tempat").value;
+let jenis=document.getElementById("jenis").value;
+
 let items=[];
 
-// 🔥 TAHU BATAGOR (AKURAT)
-let tahu = parseInt(document.getElementById("tahu").value)||0;
-let batagor = parseInt(document.getElementById("batagor").value)||0;
-
-if(tahu+batagor>0){
-items.push({
-barang:"Tahu Batagor",
-jumlah:tahu+batagor,
-detail:{tahu,batagor}
-});
-}
-
-// 🔥 CIMOL CIRENG (AKURAT)
-let cimol = parseInt(document.getElementById("cimol").value)||0;
-let cireng = parseInt(document.getElementById("cireng").value)||0;
-
-if(cimol+cireng>0){
-items.push({
-barang:"Cimol Cireng",
-jumlah:cimol+cireng,
-detail:{cimol,cireng}
-});
-}
-
-// lainnya
 function tambah(nama,id){
-let v=document.getElementById(id).value;
-if(v && v!=0){
-items.push({barang:nama,jumlah:v});
+let val=document.getElementById(id).value;
+if(val && val!=0){
+items.push({barang:nama,jumlah:val});
 }
 }
 
+// 🔥 TAHU BATAGOR (pakai detail)
+let tb = document.getElementById("tahu_batagor").value;
+if(tb && tb != 0){
+items.push({
+  barang:"Tahu Batagor",
+  jumlah: tb,
+  detail:{
+    tahu: tb,       // sementara sama dulu
+    batagor: 0      // default 0 (nanti bisa dikembangkan)
+  }
+});
+}
+
+// 🔥 CIMOL CIRENG
+let cc = document.getElementById("cimol_cireng").value;
+if(cc && cc != 0){
+items.push({
+  barang:"Cimol Cireng",
+  jumlah: cc,
+  detail:{
+    cimol: cc,
+    cireng: 0
+  }
+});
+}
+tambah("Cimol Cireng","cimol_cireng");
 tambah("Kripik Kolek","kripik_kolek");
 tambah("Piscok Molen","piscok_molen");
 tambah("Dimsum Maklor Moci","dimsum_maklor_moci");
 tambah("Kebab","kebab");
 tambah("Sosis Roti Gurita","sosis_roti_gurita");
+// SLOT TAMBAHAN
+function tambahSlot(idBarang,idJumlah){
+let barang=document.getElementById(idBarang).value;
+let jumlah=document.getElementById(idJumlah).value;
+
+if(barang && jumlah && jumlah!=0){
+items.push({barang:barang,jumlah:jumlah});
+}
+}
+
+tambahSlot("slot1","slot1_jumlah");
+tambahSlot("slot2","slot2_jumlah");
+let catatan=document.getElementById("catatan").value;
+
+let fotoBase64="";
+let fotoInput=document.getElementById("foto");
+
+if(fotoInput.files.length>0){
+fotoBase64=await kompresGambar(fotoInput.files[0]);
+}
 
 let data={
-waktu:new Date().toISOString(),
-tempat:tempat.value,
-jenis:jenis.value,
-items:items,
-catatan:catatan.value
+  waktu:new Date().toISOString(),
+  tempat:tempat,
+  jenis:jenis,
+  items:items,
+  foto:fotoBase64,
+  catatan:catatan
 };
 
+try{
 await db.ref("jajan").push(data);
-
-alert("Berhasil");
+alert("Berhasil disimpan");
 kosongkan();
+}catch(e){
+alert("Gagal kirim");
+}
 
 tombol.innerText="Simpan";
 tombol.disabled=false;
 }
 
-// LAPORAN AKURAT
+// 🔥 LAPORAN BARU
 function loadLaporan(){
 
 let list=document.getElementById("listLaporan");
@@ -198,38 +409,57 @@ list.innerHTML="Loading...";
 db.ref("jajan").limitToLast(50).once("value",snap=>{
 
 list.innerHTML="";
-if(!snap.val()) return list.innerHTML="Belum ada data";
 
-Object.values(snap.val()).reverse().forEach(d=>{
+if(!snap.val()){
+list.innerHTML="Belum ada data";
+return;
+}
+
+let arr=Object.values(snap.val()).reverse();
+
+arr.forEach(d=>{
 
 let items = d.items.map(i=>{
 
-// 🔥 pakai detail kalau ada
+// 🔥 kalau ada detail → tampilkan terpisah
 if(i.detail){
 
-if(i.barang==="Tahu Batagor"){
-return `• Tahu (${i.detail.tahu})<br>• Batagor (${i.detail.batagor})`;
+if(i.barang === "Tahu Batagor"){
+return `
+• Tahu (${i.detail.tahu})
+• Batagor (${i.detail.batagor})
+`;
 }
 
-if(i.barang==="Cimol Cireng"){
-return `• Cimol (${i.detail.cimol})<br>• Cireng (${i.detail.cireng})`;
+if(i.barang === "Cimol Cireng"){
+return `
+• Cimol (${i.detail.cimol})
+• Cireng (${i.detail.cireng})
+`;
 }
 
 }
 
-// fallback lama
+// fallback (data lama)
 return `• ${i.barang} (${i.jumlah})`;
 
 }).join("<br>");
 
 let div=document.createElement("div");
 div.className="laporan-card";
+
 div.innerHTML=`
 <div class="laporan-header">${d.jenis} - ${d.tempat}</div>
 <div class="laporan-tanggal">${formatTanggal(d.waktu)}</div>
 <div class="laporan-items">${items}</div>
 
-${d.catatan?`<div style="color:red;margin-top:6px">Catatan: ${d.catatan}</div>`:""}
+${d.catatan ? `
+<div style="margin-top:8px;font-weight:700;color:#dc2626">
+Catatan: ${d.catatan}
+</div>
+` : ""}
+
+${d.foto?`<img src="${d.foto}">`:""}
 `;
 
 list.appendChild(div);
@@ -240,9 +470,14 @@ list.appendChild(div);
 }
 
 function kosongkan(){
-document.querySelectorAll("input").forEach(i=>i.value="");
-document.getElementById("catatan").value="";
+document.getElementById("slot1").value="";
+document.getElementById("slot2").value="";
+document.getElementById("slot1_jumlah").value="";
+document.getElementById("slot2_jumlah").value="";
+document.querySelectorAll("input[type=number]").forEach(i=>i.value="");
+document.getElementById("foto").value="";
 document.getElementById("preview").style.display="none";
+document.getElementById("catatan").value="";
 }
 
 </script>
@@ -252,10 +487,13 @@ document.getElementById("preview").style.display="none";
 
 <script>
 const firebaseConfig={
-apiKey:"ISI_SENDIRI",
-authDomain:"ISI_SENDIRI",
-databaseURL:"ISI_SENDIRI",
-projectId:"ISI_SENDIRI",
+apiKey:"AIzaSyAIEhd42LiAEu7CzsnTXubQdxH1dzu1nyQ",
+authDomain:"cilok-86ced.firebaseapp.com",
+databaseURL:"https://cilok-86ced-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"cilok-86ced",
+storageBucket:"cilok-86ced.firebasestorage.app",
+messagingSenderId:"1038629771281",
+appId:"1:1038629771281:web:45d56ba73acaf6613a79b0"
 };
 
 firebase.initializeApp(firebaseConfig);
