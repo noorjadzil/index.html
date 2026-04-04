@@ -185,9 +185,11 @@ font-weight:600;
 <option>Akhwat</option>
 </select>
 
-<div class="row"><span>Tahu Batagor</span><input type="number" id="tahu_batagor"></div>
+<div class="row"><span>Tahu</span><input type="number" id="tahu"></div>
+<div class="row"><span>Batagor</span><input type="number" id="batagor"></div>
 <div class="row"><span>Cilok</span><input type="number" id="cilok"></div>
-<div class="row"><span>Cimol Cireng</span><input type="number" id="cimol_cireng"></div>
+<div class="row"><span>Cimol</span><input type="number" id="cimol"></div>
+<div class="row"><span>Cireng</span><input type="number" id="cireng"></div>
 <div class="row"><span>Kripik Kolek</span><input type="number" id="kripik_kolek"></div>
 <div class="row"><span>Piscok Molen</span><input type="number" id="piscok_molen"></div>
 <div class="row"><span>Dimsum Maklor Moci</span><input type="number" id="dimsum_maklor_moci"></div>
@@ -327,32 +329,36 @@ items.push({barang:nama,jumlah:val});
 }
 }
 
-// 🔥 TAHU BATAGOR (pakai detail)
-let tb = document.getElementById("tahu_batagor").value;
-if(tb && tb != 0){
+// 🔥 TAHU + BATAGOR (AKURAT)
+let tahu = parseInt(document.getElementById("tahu").value) || 0;
+let batagor = parseInt(document.getElementById("batagor").value) || 0;
+
+if(tahu + batagor > 0){
 items.push({
   barang:"Tahu Batagor",
-  jumlah: tb,
+  jumlah: tahu + batagor,
   detail:{
-    tahu: tb,       // sementara sama dulu
-    batagor: 0      // default 0 (nanti bisa dikembangkan)
+    tahu: tahu,
+    batagor: batagor
   }
 });
 }
 
-// 🔥 CIMOL CIRENG
-let cc = document.getElementById("cimol_cireng").value;
-if(cc && cc != 0){
+// 🔥 CIMOL + CIRENG (AKURAT)
+let cimol = parseInt(document.getElementById("cimol").value) || 0;
+let cireng = parseInt(document.getElementById("cireng").value) || 0;
+
+if(cimol + cireng > 0){
 items.push({
   barang:"Cimol Cireng",
-  jumlah: cc,
+  jumlah: cimol + cireng,
   detail:{
-    cimol: cc,
-    cireng: 0
+    cimol: cimol,
+    cireng: cireng
   }
 });
 }
-tambah("Cimol Cireng","cimol_cireng");
+tambah("Cilok","cilok");
 tambah("Kripik Kolek","kripik_kolek");
 tambah("Piscok Molen","piscok_molen");
 tambah("Dimsum Maklor Moci","dimsum_maklor_moci");
@@ -421,29 +427,24 @@ arr.forEach(d=>{
 
 let items = d.items.map(i=>{
 
-// 🔥 kalau ada detail → tampilkan terpisah
+// 🔥 kalau ada detail
 if(i.detail){
 
 if(i.barang === "Tahu Batagor"){
-return `
-• Tahu (${i.detail.tahu})
-• Batagor (${i.detail.batagor})
-`;
+return `• Tahu (${i.detail.tahu || 0}) Batagor (${i.detail.batagor || 0})`;
 }
 
 if(i.barang === "Cimol Cireng"){
-return `
-• Cimol (${i.detail.cimol})
-• Cireng (${i.detail.cireng})
-`;
+return `• Cimol (${i.detail.cimol || 0}) Cireng (${i.detail.cireng || 0})`;
 }
 
 }
 
-// fallback (data lama)
+// 🔥 fallback data lama
 return `• ${i.barang} (${i.jumlah})`;
 
 }).join("<br>");
+
 
 let div=document.createElement("div");
 div.className="laporan-card";
@@ -470,6 +471,10 @@ list.appendChild(div);
 }
 
 function kosongkan(){
+document.getElementById("tahu").value="";
+document.getElementById("batagor").value="";
+document.getElementById("cimol").value="";
+document.getElementById("cireng").value="";
 document.getElementById("slot1").value="";
 document.getElementById("slot2").value="";
 document.getElementById("slot1_jumlah").value="";
