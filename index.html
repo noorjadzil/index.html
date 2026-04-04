@@ -4,10 +4,10 @@
 <title>Input Jajan</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.json">
+
 <style>
 body{
-font-family: 'Segoe UI', Arial, sans-serif;
-color:#0f172a;
+font-family:'Segoe UI',Arial;
 margin:0;
 background:linear-gradient(135deg,#0f172a,#1e3a8a);
 }
@@ -15,111 +15,163 @@ background:linear-gradient(135deg,#0f172a,#1e3a8a);
 .container{
 max-width:420px;
 margin:auto;
-padding:15px;
+padding:10px;
 }
 
 .card{
 background:white;
 border-radius:16px;
-padding:20px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
+padding:15px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.tabs{
+display:flex;
+background:#1e3a8a;
+border-radius:12px 12px 0 0;
+overflow:hidden;
+margin-bottom:10px;
+}
+
+.tab-btn{
+flex:1;
+padding:12px;
+border:none;
+background:transparent;
+color:white;
+font-weight:700;
+}
+
+.tab-btn.active{
+background:#3b82f6;
 }
 
 h2{
 text-align:center;
-margin-bottom:15px;
 color:#1e3a8a;
-font-weight:800;
-letter-spacing:0.5px;
 }
 
 label{
 font-weight:700;
 font-size:13px;
-color:#334155;
 margin-top:8px;
 display:block;
 }
 
-select{
+select,input[type="number"]{
 width:100%;
-padding:12px;
+padding:10px;
 border-radius:10px;
 border:1px solid #cbd5f5;
-margin-bottom:15px;
-font-size:16px;
+margin-bottom:10px;
 font-weight:600;
-color:#1e293b;
-background:#f8fafc;
 }
 
-.table{
-margin-top:10px;
+input[type="number"]{
+text-align:center;
+font-size:16px;
 }
 
 .row{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:10px 0;
 border-bottom:1px solid #eee;
+padding:8px 0;
 }
 
-.row:last-child{
-border:none;
-}
-
-.item{
-font-size:15px;
-color:#0f172a;
-font-weight:600;
-}
-
-input{
+.row input{
 width:80px;
-padding:8px;
-border-radius:10px;
-border:1px solid #cbd5f5;
-text-align:center;
-font-size:16px;
-font-weight:600;
-color:#1e293b;
-background:#f8fafc;
 }
 
 button{
 width:100%;
-padding:15px;
-font-size:18px;
-background:linear-gradient(135deg,#1e3a8a,#3b82f6);
-color:white;
+padding:14px;
 border:none;
 border-radius:12px;
-margin-top:20px;
+background:#1e3a8a;
+color:white;
 font-weight:700;
-letter-spacing:0.5px;
-transition:0.2s;
-box-shadow:0 6px 15px rgba(30,58,138,0.3);
+margin-top:15px;
 }
 
-button:active{
-transform:scale(0.97);
+img{
+width:100%;
+border-radius:10px;
+margin-top:8px;
 }
 
-button:disabled{
-background:gray;
+#catatan{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+font-size:15px;
+font-weight:600;
+box-sizing:border-box;
+resize:none;
 }
 
+#catatan:focus{
+outline:none;
+border:2px solid #1e3a8a;
+}
+
+/* 🔥 LAPORAN STYLE BARU */
+.laporan-card{
+background:white;
+margin-top:12px;
+padding:12px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.laporan-header{
+font-size:18px;
+font-weight:700;
+color:#1e3a8a;
+margin-bottom:6px;
+}
+
+.laporan-tanggal{
+display:inline-block;
+background:#e0edff;
+color:#1e3a8a;
+padding:4px 10px;
+border-radius:8px;
+font-size:16px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.laporan-items{
+margin-top:6px;
+line-height:1.5;
+font-weight:600;
+}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
+
+<div class="tabs">
+<button class="tab-btn active" onclick="showTab('input',event)">Input</button>
+<button class="tab-btn" onclick="showTab('laporan',event)">Laporan</button>
+</div>
+
 <div class="card">
 
+<!-- INPUT -->
+<div id="inputTab">
+
 <h2>Input Jajan</h2>
+
+<label>Foto</label>
+<input type="file" id="foto" accept="image/*" capture="environment">
+<img id="preview" style="display:none">
 
 <label>Jenis</label>
 <select id="jenis">
@@ -133,118 +185,272 @@ background:gray;
 <option>Akhwat</option>
 </select>
 
-<div class="table">
-
+<div class="row"><span>Tahu Batagor</span><input type="number" id="tahu_batagor"></div>
+<div class="row"><span>Cilok</span><input type="number" id="cilok"></div>
+<div class="row"><span>Cimol Cireng</span><input type="number" id="cimol_cireng"></div>
+<div class="row"><span>Kripik Kolek</span><input type="number" id="kripik_kolek"></div>
+<div class="row"><span>Piscok Molen</span><input type="number" id="piscok_molen"></div>
+<div class="row"><span>Dimsum Maklor Moci</span><input type="number" id="dimsum_maklor_moci"></div>
+<div class="row"><span>Kebab</span><input type="number" id="kebab"></div>
+<div class="row"><span>Sosis Roti Gurita</span><input type="number" id="sosis_roti_gurita"></div>
+<!-- SLOT TAMBAHAN -->
 <div class="row">
-<span class="item">Tahu Batagor</span>
-<input type="number" id="tahu_batagor">
-</div>
-
-<div class="row">
-<span class="item">Cilok</span>
-<input type="number" id="cilok">
-</div>
-
-<div class="row">
-<span class="item">Cimol Cireng</span>
-<input type="number" id="cimol_cireng">
-</div>
-
-<div class="row">
-<span class="item">Kripik Kolek</span>
-<input type="number" id="kripik_kolek">
-</div>
-
-<div class="row">
-<span class="item">Piscok Molen</span>
-<input type="number" id="piscok_molen">
+<select id="slot1">
+<option value="">-- Pilih --</option>
+<option>Tahu Batagor</option>
+<option>Cilok</option>
+<option>Cimol Cireng</option>
+<option>Kripik Kolek</option>
+<option>Piscok Molen</option>
+<option>Dimsum Maklor Moci</option>
+<option>Kebab</option>
+<option>Sosis Roti Gurita</option>
+</select>
+<input type="number" id="slot1_jumlah">
 </div>
 
 <div class="row">
-<span class="item">Dimsum Maklor Moci</span>
-<input type="number" id="dimsum_maklor_moci">
+<select id="slot2">
+<option value="">-- Pilih --</option>
+<option>Tahu Batagor</option>
+<option>Cilok</option>
+<option>Cimol Cireng</option>
+<option>Kripik Kolek</option>
+<option>Piscok Molen</option>
+<option>Dimsum Maklor Moci</option>
+<option>Kebab</option>
+<option>Sosis Roti Gurita</option>
+</select>
+<input type="number" id="slot2_jumlah">
 </div>
+<label style="margin-top:12px;font-size:16px;font-weight:700;color:#1e3a8a;">
+Catatan
+</label>
 
-<div class="row">
-<span class="item">Kebab</span>
-<input type="number" id="kebab">
-</div>
-
-<div class="row">
-<span class="item">Sosis Roti Gurita</span>
-<input type="number" id="sosis_roti_gurita">
-</div>
-
-</div>
+<textarea id="catatan" rows="3" placeholder="Tulis catatan..."></textarea>
 
 <button id="tombol" onclick="kirim()">Simpan</button>
+
+</div>
+
+<!-- LAPORAN -->
+<div id="laporanTab" style="display:none">
+<h2>Laporan</h2>
+<div id="listLaporan">Loading...</div>
+</div>
 
 </div>
 </div>
 
 <script>
 
+function showTab(tab,e){
+document.getElementById("inputTab").style.display = tab==="input"?"block":"none";
+document.getElementById("laporanTab").style.display = tab==="laporan"?"block":"none";
+
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+e.target.classList.add("active");
+
+if(tab==="laporan") loadLaporan();
+}
+
+// FORMAT HARI
+function formatTanggal(waktu){
+let date = new Date(waktu);
+
+let hari = date.toLocaleDateString("id-ID",{weekday:"long"});
+let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year:"numeric"});
+
+let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+
+return `${hari}, ${tanggal} - ${jam}`;
+}
+
+// PREVIEW
+document.getElementById("foto").addEventListener("change",function(e){
+let file=e.target.files[0];
+if(!file) return;
+
+let reader=new FileReader();
+reader.onload=function(ev){
+let img=document.getElementById("preview");
+img.src=ev.target.result;
+img.style.display="block";
+}
+reader.readAsDataURL(file);
+});
+
+// KOMPRES
+function kompresGambar(file){
+return new Promise(resolve=>{
+let reader=new FileReader();
+reader.onload=function(e){
+let img=new Image();
+img.src=e.target.result;
+
+img.onload=function(){
+let canvas=document.createElement("canvas");
+let maxWidth=400;
+let scale=maxWidth/img.width;
+
+canvas.width=maxWidth;
+canvas.height=img.height*scale;
+
+let ctx=canvas.getContext("2d");
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+resolve(canvas.toDataURL("image/jpeg",0.5));
+}
+}
+reader.readAsDataURL(file);
+});
+}
+
+// KIRIM
 async function kirim(){
 
-var tombol=document.getElementById("tombol");
-
-if(tombol.disabled) return; // anti double klik
-
+let tombol=document.getElementById("tombol");
+if(tombol.disabled) return;
 
 tombol.innerText="Mengirim...";
 tombol.disabled=true;
 
-var tempat=document.getElementById("tempat").value;
-var jenis=document.getElementById("jenis").value;
+let tempat=document.getElementById("tempat").value;
+let jenis=document.getElementById("jenis").value;
 
-await kirimBarang("Tahu Batagor", document.getElementById("tahu_batagor").value, tempat, jenis);
-await kirimBarang("Cilok", document.getElementById("cilok").value, tempat, jenis);
-await kirimBarang("Cimol Cireng", document.getElementById("cimol_cireng").value, tempat, jenis);
-await kirimBarang("Kripik Kolek", document.getElementById("kripik_kolek").value, tempat, jenis);
-await kirimBarang("Piscok Molen", document.getElementById("piscok_molen").value, tempat, jenis);
-await kirimBarang("Dimsum Maklor Moci", document.getElementById("dimsum_maklor_moci").value, tempat, jenis);
-await kirimBarang("Kebab", document.getElementById("kebab").value, tempat, jenis);
-await kirimBarang("Sosis Roti Gurita", document.getElementById("sosis_roti_gurita").value, tempat, jenis);
+let items=[];
 
+function tambah(nama,id){
+let val=document.getElementById(id).value;
+if(val && val!=0){
+items.push({barang:nama,jumlah:val});
+}
+}
+
+tambah("Tahu Batagor","tahu_batagor");
+tambah("Cilok","cilok");
+tambah("Cimol Cireng","cimol_cireng");
+tambah("Kripik Kolek","kripik_kolek");
+tambah("Piscok Molen","piscok_molen");
+tambah("Dimsum Maklor Moci","dimsum_maklor_moci");
+tambah("Kebab","kebab");
+tambah("Sosis Roti Gurita","sosis_roti_gurita");
+// SLOT TAMBAHAN
+function tambahSlot(idBarang,idJumlah){
+let barang=document.getElementById(idBarang).value;
+let jumlah=document.getElementById(idJumlah).value;
+
+if(barang && jumlah && jumlah!=0){
+items.push({barang:barang,jumlah:jumlah});
+}
+}
+
+tambahSlot("slot1","slot1_jumlah");
+tambahSlot("slot2","slot2_jumlah");
+let catatan=document.getElementById("catatan").value;
+
+let fotoBase64="";
+let fotoInput=document.getElementById("foto");
+
+if(fotoInput.files.length>0){
+fotoBase64=await kompresGambar(fotoInput.files[0]);
+}
+
+let data={
+  waktu:new Date().toISOString(),
+  tempat:tempat,
+  jenis:jenis,
+  items:items,
+  foto:fotoBase64,
+  catatan:catatan
+};
+
+try{
+await db.ref("jajan").push(data);
+alert("Berhasil disimpan");
+kosongkan();
+}catch(e){
+alert("Gagal kirim");
+}
 
 tombol.innerText="Simpan";
 tombol.disabled=false;
-
-kosongkan();
-
-alert("Data berhasil tersimpan");
-
 }
 
-async function kirimBarang(barang,jumlah,tempat,jenis){
+// 🔥 LAPORAN BARU
+function loadLaporan(){
 
-if(jumlah=="" || jumlah==0)return;
+let list=document.getElementById("listLaporan");
+list.innerHTML="Loading...";
 
-await fetch("https://script.google.com/macros/s/AKfycbxj_nRBkdTPoASNFe1zCRZAYDbM8ihnO9Hnjp0-ewsma3jZk42I-Z7XzpSfDRaUZmu9/exec",{
-method:"POST",
-body: JSON.stringify({
-tempat:tempat,
-barang:barang,
-jumlah:jumlah,
-jenis:jenis
-})
+db.ref("jajan").limitToLast(50).once("value",snap=>{
+
+list.innerHTML="";
+
+if(!snap.val()){
+list.innerHTML="Belum ada data";
+return;
+}
+
+let arr=Object.values(snap.val()).reverse();
+
+arr.forEach(d=>{
+
+let items=d.items.map(i=>`• ${i.barang} (${i.jumlah})`).join("<br>");
+
+let div=document.createElement("div");
+div.className="laporan-card";
+
+div.innerHTML=`
+<div class="laporan-header">${d.jenis} - ${d.tempat}</div>
+<div class="laporan-tanggal">${formatTanggal(d.waktu)}</div>
+<div class="laporan-items">${items}</div>
+
+${d.catatan ? `
+<div style="margin-top:8px;font-weight:700;color:#dc2626">
+Catatan: ${d.catatan}
+</div>
+` : ""}
+
+${d.foto?`<img src="${d.foto}">`:""}
+`;
+
+list.appendChild(div);
+
 });
 
+});
 }
 
 function kosongkan(){
-
-document.getElementById("tahu_batagor").value="";
-document.getElementById("cilok").value="";
-document.getElementById("cimol_cireng").value="";
-document.getElementById("kripik_kolek").value="";
-document.getElementById("piscok_molen").value="";
-document.getElementById("dimsum_maklor_moci").value="";
-document.getElementById("kebab").value="";
-document.getElementById("sosis_roti_gurita").value="";
-
+document.getElementById("slot1").value="";
+document.getElementById("slot2").value="";
+document.getElementById("slot1_jumlah").value="";
+document.getElementById("slot2_jumlah").value="";
+document.querySelectorAll("input[type=number]").forEach(i=>i.value="");
+document.getElementById("foto").value="";
+document.getElementById("preview").style.display="none";
+document.getElementById("catatan").value="";
 }
 
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig={
+apiKey:"AIzaSyAIEhd42LiAEu7CzsnTXubQdxH1dzu1nyQ",
+authDomain:"cilok-86ced.firebaseapp.com",
+databaseURL:"https://cilok-86ced-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"cilok-86ced",
+storageBucket:"cilok-86ced.firebasestorage.app",
+messagingSenderId:"1038629771281",
+appId:"1:1038629771281:web:45d56ba73acaf6613a79b0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 </script>
 
 </body>
