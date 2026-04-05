@@ -425,24 +425,21 @@ let arr=Object.values(snap.val()).reverse();
 
 arr.forEach(d=>{
 
-let items = d.items.map(i=>{
+let items = d.items.map(i => {
+  // Tahu Batagor
+  if (i.detail && i.barang === "Tahu Batagor") {
+    return `Tahu (${i.detail.tahu || 0})<br>Batagor (${i.detail.batagor || 0})`;
+  }
 
-// 🔥 kalau ada detail
-if(i.detail){
+  // Cimol Cireng
+  if (i.detail && i.barang === "Cimol Cireng") {
+    return `Cimol (${i.detail.cimol || 0})<br>Cireng (${i.detail.cireng || 0})`;
+  }
 
-if(i.barang === "Tahu Batagor"){
-return `
-<div>• Tahu ${i.detail.tahu || 0}</div>
-<div>• Batagor ${i.detail.batagor || 0}</div>
-`;
-}
+  // Barang biasa / slot tambahan
+  return `${i.barang} (${i.jumlah})`;
 
-if(i.barang === "Cimol Cireng"){
-return `
-<div>• Cimol ${i.detail.cimol || 0}</div>
-<div>• Cireng ${i.detail.cireng || 0}</div>
-`;
-}
+}).join("<br>"); // <br> antar item
 
 }
 
