@@ -425,18 +425,31 @@ let arr=Object.values(snap.val()).reverse();
 
 arr.forEach(d=>{
 
-let items = d.items.map(i => {
-  // Tahu Batagor
+let urutan = [
+  "Tahu Batagor",
+  "Cimol Cireng",
+  "Cilok",
+  "Kripik Kolek",
+  "Piscok Molen",
+  "Dimsum Maklor Moci",
+  "Kebab",
+  "Sosis Roti Gurita"
+];
+
+// urutkan ulang berdasarkan daftar di atas
+let itemsSorted = [...d.items].sort((a, b) => {
+  return urutan.indexOf(a.barang) - urutan.indexOf(b.barang);
+});
+
+let items = itemsSorted.map(i => {
   if (i.detail && i.barang === "Tahu Batagor") {
     return `Tahu (${i.detail.tahu || 0})<br>Batagor (${i.detail.batagor || 0})`;
   }
 
-  // Cimol Cireng
   if (i.detail && i.barang === "Cimol Cireng") {
     return `Cimol (${i.detail.cimol || 0})<br>Cireng (${i.detail.cireng || 0})`;
   }
 
-  // Cilok & barang lain
   return `${i.barang} (${i.jumlah})`;
 
 }).join("<br>");
