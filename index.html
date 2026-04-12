@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Huruf Suara</title>
+<title>Belajar Huruf A-Z</title>
 
 <style>
 body {
@@ -17,10 +17,10 @@ h1 {
     color: #333;
 }
 
-img {
-    width: 200px;
-    height: 200px;
-    margin: 20px;
+#huruf {
+    font-size: 150px;
+    margin: 40px;
+    color: #ff6600;
 }
 
 button {
@@ -37,113 +37,60 @@ button {
 button:hover {
     background: #45a049;
 }
-
-#hasil {
-    font-size: 24px;
-    margin-top: 20px;
-}
-
-#score {
-    margin-top: 20px;
-    font-size: 20px;
-}
 </style>
 </head>
 
 <body>
 
-<h1>Game Tebak Huruf (Suara)</h1>
+<h1>Belajar Huruf A - Z</h1>
 
-<img id="gambar" src="" alt="gambar huruf">
+<div id="huruf">A</div>
 
-<br>
-<button onclick="mulaiJawab()">🎤 Jawab dengan Suara</button>
-
-<div id="hasil"></div>
-<div id="score">Benar: 0 | Salah: 0</div>
+<button onclick="playSound()">🔊 Suara</button>
+<button onclick="nextHuruf()">➡️ Lanjut</button>
 
 <script>
-const dataHuruf = [
-    {huruf: "A", gambar: "https://dummyimage.com/200x200/000/fff&text=A"},
-    {huruf: "B", gambar: "https://dummyimage.com/200x200/000/fff&text=B"},
-    {huruf: "C", gambar: "https://dummyimage.com/200x200/000/fff&text=C"},
-    {huruf: "D", gambar: "https://dummyimage.com/200x200/000/fff&text=D"},
-    {huruf: "E", gambar: "https://dummyimage.com/200x200/000/fff&text=E"},
-    {huruf: "F", gambar: "https://dummyimage.com/200x200/000/fff&text=F"},
-    {huruf: "G", gambar: "https://dummyimage.com/200x200/000/fff&text=G"},
-    {huruf: "H", gambar: "https://dummyimage.com/200x200/000/fff&text=H"},
-    {huruf: "I", gambar: "https://dummyimage.com/200x200/000/fff&text=I"},
-    {huruf: "J", gambar: "https://dummyimage.com/200x200/000/fff&text=J"},
-    {huruf: "K", gambar: "https://dummyimage.com/200x200/000/fff&text=K"},
-    {huruf: "L", gambar: "https://dummyimage.com/200x200/000/fff&text=L"},
-    {huruf: "M", gambar: "https://dummyimage.com/200x200/000/fff&text=M"},
-    {huruf: "N", gambar: "https://dummyimage.com/200x200/000/fff&text=N"},
-    {huruf: "O", gambar: "https://dummyimage.com/200x200/000/fff&text=O"},
-    {huruf: "P", gambar: "https://dummyimage.com/200x200/000/fff&text=P"},
-    {huruf: "Q", gambar: "https://dummyimage.com/200x200/000/fff&text=Q"},
-    {huruf: "R", gambar: "https://dummyimage.com/200x200/000/fff&text=R"},
-    {huruf: "S", gambar: "https://dummyimage.com/200x200/000/fff&text=S"},
-    {huruf: "T", gambar: "https://dummyimage.com/200x200/000/fff&text=T"},
-    {huruf: "U", gambar: "https://dummyimage.com/200x200/000/fff&text=U"},
-    {huruf: "V", gambar: "https://dummyimage.com/200x200/000/fff&text=V"},
-    {huruf: "W", gambar: "https://dummyimage.com/200x200/000/fff&text=W"},
-    {huruf: "X", gambar: "https://dummyimage.com/200x200/000/fff&text=X"},
-    {huruf: "Y", gambar: "https://dummyimage.com/200x200/000/fff&text=Y"},
-    {huruf: "Z", gambar: "https://dummyimage.com/200x200/000/fff&text=Z"}
-];
+let hurufList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+let acakHuruf = [];
+let index = 0;
 
-let hurufSekarang = "";
-let benar = 0;
-let salah = 0;
-
-function randomSoal() {
-    let random = dataHuruf[Math.floor(Math.random() * dataHuruf.length)];
-    hurufSekarang = random.huruf;
-    document.getElementById("gambar").src = random.gambar;
-}
-
-function mulaiJawab() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-        alert("Browser tidak mendukung suara");
-        return;
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "id-ID";
-    recognition.start();
-
-    recognition.onresult = function(event) {
-        let hasilSuara = event.results[0][0].transcript.toUpperCase().trim();
-        cekJawaban(hasilSuara);
-    };
 }
 
-function cekJawaban(jawaban) {
-    if (jawaban === hurufSekarang) {
-        document.getElementById("hasil").innerText = "✅ Benar!";
-        benar++;
+function mulaiGame() {
+    acakHuruf = [...hurufList];
+    shuffle(acakHuruf);
+    index = 0;
+    tampilHuruf();
+}
+
+function tampilHuruf() {
+    document.getElementById("huruf").innerText = acakHuruf[index];
+}
+
+function nextHuruf() {
+    index++;
+    if (index >= acakHuruf.length) {
+        alert("Semua huruf sudah dipelajari! Ulang lagi ya 😊");
+        mulaiGame();
     } else {
-        document.getElementById("hasil").innerText = "❌ Salah! Jawaban: " + hurufSekarang;
-        salah++;
+        tampilHuruf();
     }
-
-    updateScore();
-
-    setTimeout(() => {
-        document.getElementById("hasil").innerText = "";
-        randomSoal();
-    }, 1500);
 }
 
-function updateScore() {
-    document.getElementById("score").innerText =
-        "Benar: " + benar + " | Salah: " + salah;
+function playSound() {
+    let huruf = acakHuruf[index];
+    let msg = new SpeechSynthesisUtterance(huruf);
+    msg.lang = "id-ID";
+    speechSynthesis.speak(msg);
 }
 
 // mulai
-randomSoal();
+mulaiGame();
 </script>
 
 </body>
