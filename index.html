@@ -3,18 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Huruf 2 Pemain</title>
+<title>Game Huruf 2 Pemain Berhadapan</title>
 
 <style>
 body {
     font-family: Arial;
     text-align: center;
     background: #f0f8ff;
-    padding: 10px;
+    margin: 0;
 }
 
 h1 {
-    color: #333;
+    margin: 10px;
+}
+
+#score {
+    font-size: 20px;
+    margin: 10px;
 }
 
 .area {
@@ -27,6 +32,7 @@ h1 {
 
 .bawah {
     background: #ffd0d0;
+    transform: rotate(180deg); /* INI KUNCI NYA */
 }
 
 .pilihan {
@@ -35,22 +41,24 @@ h1 {
     height: 80px;
     margin: 10px;
     border-radius: 10px;
+    border: none;
+    background: #4CAF50;
+    color: white;
 }
 
-#score {
-    font-size: 20px;
-    margin: 10px;
+button {
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Game Huruf 2 Pemain</h1>
+<h1>Game Huruf Berhadapan</h1>
 
 <div id="score">
-Pemain Atas: <span id="scoreAtas">0</span> |
-Pemain Bawah: <span id="scoreBawah">0</span>
+Atas: <span id="scoreAtas">0</span> |
+Bawah: <span id="scoreBawah">0</span>
 </div>
 
 <button onclick="playSoal()">🔊 Dengarkan Soal</button>
@@ -61,7 +69,7 @@ Pemain Bawah: <span id="scoreBawah">0</span>
     <div id="pilihanAtas"></div>
 </div>
 
-<!-- PEMAIN BAWAH -->
+<!-- PEMAIN BAWAH (DIPUTAR) -->
 <div class="area bawah">
     <h2>👇 Pemain Bawah</h2>
     <div id="pilihanBawah"></div>
@@ -113,18 +121,15 @@ function playSoal() {
 
 function jawab(pemain, jawaban) {
     if (jawaban === hurufSoal) {
-        if (pemain === "atas") {
-            scoreAtas++;
-        } else {
-            scoreBawah++;
-        }
+        if (pemain === "atas") scoreAtas++;
+        else scoreBawah++;
 
         updateScore();
         bicara("Selamat anda benar");
 
-        setTimeout(buatSoal, 1500);
+        setTimeout(buatSoal, 1200);
     } else {
-        bicara("Anda salah");
+        bicara("Anda salah, coba lagi");
     }
 }
 
