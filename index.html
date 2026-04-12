@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Belajar Huruf A-Z</title>
+<title>Game Huruf A-Z</title>
 
 <style>
 body {
@@ -18,8 +18,8 @@ h1 {
 }
 
 #huruf {
-    font-size: 150px;
-    margin: 40px;
+    font-size: 120px;
+    margin: 30px;
     color: #ff6600;
 }
 
@@ -37,20 +37,44 @@ button {
 button:hover {
     background: #45a049;
 }
+
+.pilihan {
+    font-size: 40px;
+    width: 80px;
+    height: 80px;
+}
+
+.hidden {
+    display: none;
+}
 </style>
 </head>
 
 <body>
 
-<h1>Belajar Huruf A - Z</h1>
+<h1>Game Belajar Huruf</h1>
 
-<div id="huruf">A</div>
+<!-- LEVEL 1 -->
+<div id="level1">
+    <h2>Level 1</h2>
+    <div id="huruf">A</div>
+    <button onclick="playSound()">🔊 Suara</button>
+    <button onclick="nextHuruf()">➡️ Lanjut</button>
+    <br>
+    <button onclick="keLevel2()">➡️ Ke Level 2</button>
+</div>
 
-<button onclick="playSound()">🔊 Suara</button>
-<button onclick="nextHuruf()">➡️ Lanjut</button>
+<!-- LEVEL 2 -->
+<div id="level2" class="hidden">
+    <h2>Level 2</h2>
+    <button onclick="playSoal()">🔊 Dengarkan Soal</button>
+    <div id="pilihan"></div>
+</div>
 
 <script>
 let hurufList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+// ================= LEVEL 1 =================
 let acakHuruf = [];
 let index = 0;
 
@@ -75,7 +99,7 @@ function tampilHuruf() {
 function nextHuruf() {
     index++;
     if (index >= acakHuruf.length) {
-        alert("Semua huruf sudah dipelajari! Ulang lagi ya 😊");
+        alert("Selesai! Ulang lagi ya 😊");
         mulaiGame();
     } else {
         tampilHuruf();
@@ -84,7 +108,56 @@ function nextHuruf() {
 
 function playSound() {
     let huruf = acakHuruf[index];
-    let msg = new SpeechSynthesisUtterance(huruf);
+    bicara(huruf);
+}
+
+// ================= LEVEL 2 =================
+let hurufSoal = "";
+
+function keLevel2() {
+    document.getElementById("level1").classList.add("hidden");
+    document.getElementById("level2").classList.remove("hidden");
+    buatSoal();
+}
+
+function buatSoal() {
+    hurufSoal = hurufList[Math.floor(Math.random() * hurufList.length)];
+
+    let pilihan = [hurufSoal];
+
+    while (pilihan.length < 4) {
+        let h = hurufList[Math.floor(Math.random() * hurufList.length)];
+        if (!pilihan.includes(h)) pilihan.push(h);
+    }
+
+    shuffle(pilihan);
+
+    let html = "";
+    pilihan.forEach(h => {
+        html += `<button class="pilihan" onclick="cekJawaban('${h}')">${h}</button>`;
+    });
+
+    document.getElementById("pilihan").innerHTML = html;
+
+    playSoal();
+}
+
+function playSoal() {
+    bicara("Manakah huruf " + hurufSoal);
+}
+
+function cekJawaban(jawaban) {
+    if (jawaban === hurufSoal) {
+        bicara("Selamat anda benar");
+        setTimeout(buatSoal, 1500);
+    } else {
+        bicara("Anda salah, coba lagi");
+    }
+}
+
+// ================= SUARA =================
+function bicara(teks) {
+    let msg = new SpeechSynthesisUtterance(teks);
     msg.lang = "id-ID";
     speechSynthesis.speak(msg);
 }
