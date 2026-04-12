@@ -3,121 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Huruf A-Z</title>
+<title>Game Huruf 2 Pemain</title>
 
 <style>
 body {
     font-family: Arial;
     text-align: center;
     background: #f0f8ff;
-    padding: 20px;
+    padding: 10px;
 }
 
 h1 {
     color: #333;
 }
 
-#huruf {
-    font-size: 120px;
-    margin: 30px;
-    color: #ff6600;
+.area {
+    padding: 20px;
 }
 
-button {
-    padding: 15px 25px;
-    font-size: 18px;
-    margin: 10px;
-    border: none;
-    border-radius: 10px;
-    background: #4CAF50;
-    color: white;
-    cursor: pointer;
+.atas {
+    background: #d0f0ff;
 }
 
-button:hover {
-    background: #45a049;
+.bawah {
+    background: #ffd0d0;
 }
 
 .pilihan {
     font-size: 40px;
     width: 80px;
     height: 80px;
+    margin: 10px;
+    border-radius: 10px;
 }
 
-.hidden {
-    display: none;
+#score {
+    font-size: 20px;
+    margin: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Game Belajar Huruf</h1>
+<h1>Game Huruf 2 Pemain</h1>
 
-<!-- LEVEL 1 -->
-<div id="level1">
-    <h2>Level 1</h2>
-    <div id="huruf">A</div>
-    <button onclick="playSound()">🔊 Suara</button>
-    <button onclick="nextHuruf()">➡️ Lanjut</button>
-    <br>
-    <button onclick="keLevel2()">➡️ Ke Level 2</button>
+<div id="score">
+Pemain Atas: <span id="scoreAtas">0</span> |
+Pemain Bawah: <span id="scoreBawah">0</span>
 </div>
 
-<!-- LEVEL 2 -->
-<div id="level2" class="hidden">
-    <h2>Level 2</h2>
-    <button onclick="playSoal()">🔊 Dengarkan Soal</button>
-    <div id="pilihan"></div>
+<button onclick="playSoal()">🔊 Dengarkan Soal</button>
+
+<!-- PEMAIN ATAS -->
+<div class="area atas">
+    <h2>👆 Pemain Atas</h2>
+    <div id="pilihanAtas"></div>
+</div>
+
+<!-- PEMAIN BAWAH -->
+<div class="area bawah">
+    <h2>👇 Pemain Bawah</h2>
+    <div id="pilihanBawah"></div>
 </div>
 
 <script>
 let hurufList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+let hurufSoal = "";
 
-// ================= LEVEL 1 =================
-let acakHuruf = [];
-let index = 0;
+let scoreAtas = 0;
+let scoreBawah = 0;
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-}
-
-function mulaiGame() {
-    acakHuruf = [...hurufList];
-    shuffle(acakHuruf);
-    index = 0;
-    tampilHuruf();
-}
-
-function tampilHuruf() {
-    document.getElementById("huruf").innerText = acakHuruf[index];
-}
-
-function nextHuruf() {
-    index++;
-    if (index >= acakHuruf.length) {
-        alert("Selesai! Ulang lagi ya 😊");
-        mulaiGame();
-    } else {
-        tampilHuruf();
-    }
-}
-
-function playSound() {
-    let huruf = acakHuruf[index];
-    bicara(huruf);
-}
-
-// ================= LEVEL 2 =================
-let hurufSoal = "";
-
-function keLevel2() {
-    document.getElementById("level1").classList.add("hidden");
-    document.getElementById("level2").classList.remove("hidden");
-    buatSoal();
 }
 
 function buatSoal() {
@@ -132,12 +93,16 @@ function buatSoal() {
 
     shuffle(pilihan);
 
-    let html = "";
+    let htmlAtas = "";
+    let htmlBawah = "";
+
     pilihan.forEach(h => {
-        html += `<button class="pilihan" onclick="cekJawaban('${h}')">${h}</button>`;
+        htmlAtas += `<button class="pilihan" onclick="jawab('atas','${h}')">${h}</button>`;
+        htmlBawah += `<button class="pilihan" onclick="jawab('bawah','${h}')">${h}</button>`;
     });
 
-    document.getElementById("pilihan").innerHTML = html;
+    document.getElementById("pilihanAtas").innerHTML = htmlAtas;
+    document.getElementById("pilihanBawah").innerHTML = htmlBawah;
 
     playSoal();
 }
@@ -146,16 +111,28 @@ function playSoal() {
     bicara("Manakah huruf " + hurufSoal);
 }
 
-function cekJawaban(jawaban) {
+function jawab(pemain, jawaban) {
     if (jawaban === hurufSoal) {
+        if (pemain === "atas") {
+            scoreAtas++;
+        } else {
+            scoreBawah++;
+        }
+
+        updateScore();
         bicara("Selamat anda benar");
+
         setTimeout(buatSoal, 1500);
     } else {
-        bicara("Anda salah, coba lagi");
+        bicara("Anda salah");
     }
 }
 
-// ================= SUARA =================
+function updateScore() {
+    document.getElementById("scoreAtas").innerText = scoreAtas;
+    document.getElementById("scoreBawah").innerText = scoreBawah;
+}
+
 function bicara(teks) {
     let msg = new SpeechSynthesisUtterance(teks);
     msg.lang = "id-ID";
@@ -163,7 +140,7 @@ function bicara(teks) {
 }
 
 // mulai
-mulaiGame();
+buatSoal();
 </script>
 
 </body>
