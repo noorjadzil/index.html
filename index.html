@@ -3,87 +3,211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo Variasi Suara</title>
+<title>Level 1 - Huruf</title>
 
 <style>
-body {
-    font-family: Arial;
-    text-align: center;
-    background: #f0f8ff;
-    padding: 20px;
+body{
+font-family:Arial;
+text-align:center;
+background:#f0f8ff;
+margin:0;
+padding:10px;
 }
 
-button {
-    padding: 12px 20px;
-    margin: 10px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    background: #4CAF50;
-    color: white;
+h1{
+margin:10px;
 }
 
-button:hover {
-    background: #45a049;
+#soal{
+font-size:22px;
+margin:20px;
+font-weight:bold;
 }
 
-h1 {
-    margin-bottom: 20px;
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+max-width:300px;
+margin:auto;
+}
+
+.pilihan{
+font-size:40px;
+padding:20px;
+border-radius:10px;
+border:none;
+background:#4CAF50;
+color:white;
+}
+
+.pilihan:active{
+transform:scale(0.9);
+}
+
+.menu{
+margin-top:20px;
+}
+
+button{
+padding:10px 15px;
+margin:5px;
+border:none;
+border-radius:8px;
+background:#1e3a8a;
+color:white;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Demo Suara "BAJU"</h1>
+<h1>Level 1</h1>
 
-<h3>🔊 Jenis Suara (pakai pitch)</h3>
-<button onclick="suaraBerat()">Suara Berat (mirip laki)</button>
-<button onclick="suaraNormal()">Suara Normal</button>
-<button onclick="suaraTinggi()">Suara Tinggi (mirip anak)</button>
+<div id="soal">Tekan suara</div>
+<button onclick="playSoal()">🔊 Dengarkan Soal</button>
 
-<h3>⏱️ Kecepatan</h3>
-<button onclick="superLambat()">Super Lambat</button>
-<button onclick="normal()">Normal</button>
-<button onclick="superCepat()">Super Cepat</button>
+<div class="grid" id="pilihan"></div>
+
+<div class="menu">
+<button onclick="location.href='pengaturan.html'">⚙️ Pengaturan</button>
+<button onclick="location.href='level2.html'">➡️ Level 2</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-function bicara(teks, pitch=1, rate=1) {
-    let msg = new SpeechSynthesisUtterance(teks);
-    msg.lang = "id-ID";
+firebase.initializeApp({
+databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
+const db=firebase.database();
 
-    msg.pitch = pitch; // tinggi rendah suara
-    msg.rate = rate;   // cepat lambat
+// ================= SETTING =================
+let gameSetting={
+pitch:1,
+speed:1,
+volume:1,
+voice:null,
+efek:"on",
+modeAnak:"off"
+};
 
-    speechSynthesis.cancel(); // hentikan sebelumnya
-    speechSynthesis.speak(msg);
+let voices=[];
+
+function loadVoices(){
+voices = speechSynthesis.getVoices();
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function loadGameSetting(){
+db.ref("config/game").on("value",snap=>{
+let s=snap.val();
+if(!s) return;
+gameSetting=s;
+});
 }
 
 // ================= SUARA =================
-function suaraBerat() {
-    bicara("baju", 0.5, 0.9); // lebih rendah
+function bicara(teks){
+let msg=new SpeechSynthesisUtterance(teks);
+
+msg.pitch=gameSetting.pitch||1;
+msg.rate=gameSetting.speed||1;
+msg.volume=gameSetting.volume||1;
+
+if(voices[gameSetting.voice]){
+msg.voice=voices[gameSetting.voice];
 }
 
-function suaraNormal() {
-    bicara("baju", 1, 1);
+speechSynthesis.cancel();
+speechSynthesis.speak(msg);
 }
 
-function suaraTinggi() {
-    bicara("baju", 1.8, 1); // lebih tinggi
+// ================= GAME =================
+let hurufList="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+let hurufSoal="";
+
+// 10 variasi soal
+let variasiSoal=[
+"Manakah huruf ",
+"Cari huruf ",
+"Huruf apa ini ",
+"Dimana huruf ",
+"Pilih huruf ",
+"Ayo temukan huruf ",
+"Coba cari huruf ",
+"Mana huruf ",
+"Tekan huruf ",
+"Huruf yang benar adalah "
+];
+
+function randomHuruf(){
+let h=hurufList[Math.floor(Math.random()*hurufList.length)];
+// random besar kecil
+return Math.random()>0.5 ? h : h.toLowerCase();
 }
 
-// ================= KECEPATAN =================
-function superLambat() {
-    bicara("baju", 1, 0.4);
+function buatSoal(){
+hurufSoal=randomHuruf();
+
+let pilihan=[hurufSoal];
+
+// buat 9 pilihan
+while(pilihan.length<9){
+let h=randomHuruf();
+if(!pilihan.includes(h)) pilihan.push(h);
 }
 
-function normal() {
-    bicara("baju", 1, 1);
+// acak
+pilihan.sort(()=>Math.random()-0.5);
+
+let html="";
+pilihan.forEach(h=>{
+html+=`<button class="pilihan" onclick="jawab('${h}',this)">${h}</button>`;
+});
+
+document.getElementById("pilihan").innerHTML=html;
+
+playSoal();
 }
 
-function superCepat() {
-    bicara("baju", 1, 1.8);
+function playSoal(){
+let kalimat=variasiSoal[Math.floor(Math.random()*variasiSoal.length)] + hurufSoal;
+document.getElementById("soal").innerText=kalimat;
+bicara(kalimat);
 }
+
+function jawab(jawaban,el){
+if(jawaban===hurufSoal){
+
+el.style.background="green";
+
+bicara("Selamat anda benar");
+
+if(gameSetting.modeAnak==="on"){
+setTimeout(()=>bicara("Hebat"),800);
+}
+
+setTimeout(buatSoal,1200);
+
+}else{
+
+el.style.background="red";
+
+bicara("Anda salah");
+
+if(gameSetting.modeAnak==="on"){
+setTimeout(()=>bicara("Coba lagi ya"),800);
+}
+
+}
+}
+
+// mulai
+loadVoices();
+loadGameSetting();
+setTimeout(buatSoal,500);
 </script>
 
 </body>
