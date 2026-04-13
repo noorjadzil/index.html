@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo Suara TTS</title>
+<title>Demo Variasi Suara</title>
 
 <style>
 body {
@@ -13,10 +13,18 @@ body {
     padding: 20px;
 }
 
-button, select {
-    padding: 10px;
+button {
+    padding: 12px 20px;
     margin: 10px;
     font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    background: #4CAF50;
+    color: white;
+}
+
+button:hover {
+    background: #45a049;
 }
 
 h1 {
@@ -27,59 +35,54 @@ h1 {
 
 <body>
 
-<h1>Demo Suara Kata: "BAJU"</h1>
+<h1>Demo Suara "BAJU"</h1>
 
-<div>
-    <label>Pilih Suara:</label><br>
-    <select id="voiceSelect"></select>
-</div>
+<h3>🔊 Jenis Suara (pakai pitch)</h3>
+<button onclick="suaraBerat()">Suara Berat (mirip laki)</button>
+<button onclick="suaraNormal()">Suara Normal</button>
+<button onclick="suaraTinggi()">Suara Tinggi (mirip anak)</button>
 
-<div>
-    <label>Kecepatan:</label><br>
-    <select id="speed">
-        <option value="0.3">Super Lambat</option>
-        <option value="0.5">Lambat</option>
-        <option value="0.7">Agak Lambat</option>
-        <option value="1" selected>Normal</option>
-        <option value="1.3">Agak Cepat</option>
-        <option value="1.6">Cepat</option>
-        <option value="2">Super Cepat</option>
-    </select>
-</div>
-
-<br>
-
-<button onclick="bicara()">🔊 Ucapkan "Baju"</button>
+<h3>⏱️ Kecepatan</h3>
+<button onclick="superLambat()">Super Lambat</button>
+<button onclick="normal()">Normal</button>
+<button onclick="superCepat()">Super Cepat</button>
 
 <script>
-let voices = [];
+function bicara(teks, pitch=1, rate=1) {
+    let msg = new SpeechSynthesisUtterance(teks);
+    msg.lang = "id-ID";
 
-function loadVoices() {
-    voices = speechSynthesis.getVoices();
-    let select = document.getElementById("voiceSelect");
-    select.innerHTML = "";
+    msg.pitch = pitch; // tinggi rendah suara
+    msg.rate = rate;   // cepat lambat
 
-    voices.forEach((voice, i) => {
-        let option = document.createElement("option");
-        option.value = i;
-        option.text = voice.name + " (" + voice.lang + ")";
-        select.appendChild(option);
-    });
+    speechSynthesis.cancel(); // hentikan sebelumnya
+    speechSynthesis.speak(msg);
 }
 
-speechSynthesis.onvoiceschanged = loadVoices;
+// ================= SUARA =================
+function suaraBerat() {
+    bicara("baju", 0.5, 0.9); // lebih rendah
+}
 
-function bicara() {
-    let msg = new SpeechSynthesisUtterance("baju");
+function suaraNormal() {
+    bicara("baju", 1, 1);
+}
 
-    let selectedVoice = document.getElementById("voiceSelect").value;
-    let speed = document.getElementById("speed").value;
+function suaraTinggi() {
+    bicara("baju", 1.8, 1); // lebih tinggi
+}
 
-    msg.voice = voices[selectedVoice];
-    msg.rate = speed;
-    msg.pitch = 1;
+// ================= KECEPATAN =================
+function superLambat() {
+    bicara("baju", 1, 0.4);
+}
 
-    speechSynthesis.speak(msg);
+function normal() {
+    bicara("baju", 1, 1);
+}
+
+function superCepat() {
+    bicara("baju", 1, 1.8);
 }
 </script>
 
