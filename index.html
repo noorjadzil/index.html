@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Level 1 - Huruf</title>
+<title>Level 1</title>
 
 <style>
 body{
@@ -14,48 +14,73 @@ margin:0;
 padding:10px;
 }
 
-h1{
+h1{margin:10px;}
+
+#score{
+font-size:18px;
 margin:10px;
 }
 
-#soal{
-font-size:22px;
-margin:20px;
-font-weight:bold;
+#stars{
+font-size:25px;
+color:gold;
+margin-bottom:10px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:10px;
-max-width:300px;
+max-width:320px;
 margin:auto;
 }
 
 .pilihan{
-font-size:40px;
+font-size:35px;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 border:none;
 background:#4CAF50;
 color:white;
+transition:0.2s;
 }
 
 .pilihan:active{
-transform:scale(0.9);
+transform:scale(0.85);
+}
+
+.benar{
+background:green !important;
+animation:pop 0.3s;
+}
+
+.salah{
+background:red !important;
+animation:shake 0.3s;
+}
+
+@keyframes pop{
+0%{transform:scale(0.5);}
+100%{transform:scale(1);}
+}
+
+@keyframes shake{
+0%{transform:translateX(0);}
+25%{transform:translateX(-5px);}
+50%{transform:translateX(5px);}
+75%{transform:translateX(-5px);}
+100%{transform:translateX(0);}
+}
+
+select,button{
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:none;
 }
 
 .menu{
-margin-top:20px;
-}
-
-button{
-padding:10px 15px;
-margin:5px;
-border:none;
-border-radius:8px;
-background:#1e3a8a;
-color:white;
+margin-top:15px;
 }
 </style>
 </head>
@@ -64,8 +89,19 @@ color:white;
 
 <h1>Level 1</h1>
 
-<div id="soal">Tekan suara</div>
-<button onclick="playSoal()">🔊 Dengarkan Soal</button>
+<div id="score">Skor: 0</div>
+<div id="stars">⭐</div>
+
+<label>Tingkat Kesulitan</label><br>
+<select id="level" onchange="buatSoal()">
+<option value="3">Mudah (3 huruf)</option>
+<option value="6">Sedang (6 huruf)</option>
+<option value="9" selected>Sulit (9 huruf)</option>
+<option value="12">Expert (12 huruf)</option>
+</select>
+
+<br>
+<button onclick="playSoal()">🔊 Ulangi Soal</button>
 
 <div class="grid" id="pilihan"></div>
 
@@ -84,82 +120,62 @@ databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase
 const db=firebase.database();
 
 // ================= SETTING =================
-let gameSetting={
-pitch:1,
-speed:1,
-volume:1,
-voice:null,
-efek:"on",
-modeAnak:"off"
-};
-
+let gameSetting={pitch:1,speed:1,volume:1,voice:null,modeAnak:"off"};
 let voices=[];
 
-function loadVoices(){
-voices = speechSynthesis.getVoices();
-}
-speechSynthesis.onvoiceschanged = loadVoices;
+speechSynthesis.onvoiceschanged=()=>voices=speechSynthesis.getVoices();
 
-function loadGameSetting(){
 db.ref("config/game").on("value",snap=>{
 let s=snap.val();
-if(!s) return;
-gameSetting=s;
+if(s) gameSetting=s;
 });
-}
 
 // ================= SUARA =================
-function bicara(teks){
+function bicara(teks,delay=0){
+setTimeout(()=>{
 let msg=new SpeechSynthesisUtterance(teks);
-
 msg.pitch=gameSetting.pitch||1;
 msg.rate=gameSetting.speed||1;
 msg.volume=gameSetting.volume||1;
-
-if(voices[gameSetting.voice]){
-msg.voice=voices[gameSetting.voice];
-}
-
-speechSynthesis.cancel();
+if(voices[gameSetting.voice]) msg.voice=voices[gameSetting.voice];
 speechSynthesis.speak(msg);
+},delay);
 }
 
 // ================= GAME =================
 let hurufList="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 let hurufSoal="";
+let skor=0;
+let benarStreak=0;
 
-// 10 variasi soal
-let variasiSoal=[
+let soalVariasi=[
 "Manakah huruf ",
 "Cari huruf ",
-"Huruf apa ini ",
-"Dimana huruf ",
 "Pilih huruf ",
 "Ayo temukan huruf ",
-"Coba cari huruf ",
 "Mana huruf ",
-"Tekan huruf ",
 "Huruf yang benar adalah "
 ];
 
 function randomHuruf(){
 let h=hurufList[Math.floor(Math.random()*hurufList.length)];
-// random besar kecil
 return Math.random()>0.5 ? h : h.toLowerCase();
 }
 
 function buatSoal(){
+let jumlah=parseInt(document.getElementById("level").value);
+
 hurufSoal=randomHuruf();
 
 let pilihan=[hurufSoal];
 
-// buat 9 pilihan
-while(pilihan.length<9){
+while(pilihan.length<jumlah){
 let h=randomHuruf();
-if(!pilihan.includes(h)) pilihan.push(h);
+if(!pilihan.map(x=>x.toLowerCase()).includes(h.toLowerCase())){
+pilihan.push(h);
+}
 }
 
-// acak
 pilihan.sort(()=>Math.random()-0.5);
 
 let html="";
@@ -173,40 +189,78 @@ playSoal();
 }
 
 function playSoal(){
-let kalimat=variasiSoal[Math.floor(Math.random()*variasiSoal.length)] + hurufSoal;
-document.getElementById("soal").innerText=kalimat;
-bicara(kalimat);
+let teks=soalVariasi[Math.floor(Math.random()*soalVariasi.length)] + hurufSoal;
+bicara(teks);
 }
 
+// ================= JAWAB =================
 function jawab(jawaban,el){
-if(jawaban===hurufSoal){
 
-el.style.background="green";
+if(jawaban.toLowerCase()===hurufSoal.toLowerCase()){
 
-bicara("Selamat anda benar");
+el.classList.add("benar");
+skor++;
+benarStreak++;
 
-if(gameSetting.modeAnak==="on"){
-setTimeout(()=>bicara("Hebat"),800);
-}
+updateScore();
 
-setTimeout(buatSoal,1200);
+suaraBenar();
+
+setTimeout(buatSoal,1800);
 
 }else{
 
-el.style.background="red";
+el.classList.add("salah");
+benarStreak=0;
 
-bicara("Anda salah");
-
-if(gameSetting.modeAnak==="on"){
-setTimeout(()=>bicara("Coba lagi ya"),800);
+suaraSalah();
+}
 }
 
+// ================= SUARA VARIASI =================
+function suaraSalah(){
+let variasi=[
+["Anda salah","coba lagi"],
+["Kamu salah","ayo coba lagi"],
+["Ups salah","coba lagi ya"]
+];
+
+let v=variasi[Math.floor(Math.random()*variasi.length)];
+
+bicara(v[0]);
+bicara(v[1],1000);
 }
+
+function suaraBenar(){
+
+let variasi=[
+["Anda benar","wow hebat"],
+["Wow hebat","kamu benar"],
+["Bagus sekali","kamu benar"]
+];
+
+let v=variasi[Math.floor(Math.random()*variasi.length)];
+
+bicara(v[0]);
+bicara(v[1],1000);
+
+if(benarStreak>=5){
+bicara("sempurna",2000);
+}
+}
+
+// ================= SCORE =================
+function updateScore(){
+document.getElementById("score").innerText="Skor: "+skor;
+
+let bintang="⭐";
+if(skor>5) bintang="⭐⭐";
+if(skor>10) bintang="⭐⭐⭐";
+
+document.getElementById("stars").innerText=bintang;
 }
 
 // mulai
-loadVoices();
-loadGameSetting();
 setTimeout(buatSoal,500);
 </script>
 
