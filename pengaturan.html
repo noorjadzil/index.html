@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengaturan Game</title>
+
+<style>
+body{
+font-family:'Segoe UI',Arial;
+margin:0;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
+}
+
+.container{
+max-width:420px;
+margin:auto;
+padding:10px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:15px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+h2{
+text-align:center;
+color:#1e3a8a;
+}
+
+label{
+font-weight:700;
+font-size:14px;
+margin-top:12px;
+display:block;
+}
+
+select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+margin-bottom:10px;
+font-weight:600;
+font-size:15px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#1e3a8a;
+color:white;
+font-weight:700;
+margin-top:10px;
+}
+
+.test-btn{
+background:#16a34a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>⚙️ Pengaturan Game</h2>
+
+<!-- VOICE -->
+<label>Pilih Suara</label>
+<select id="voice"></select>
+
+<!-- VOLUME -->
+<label>Volume</label>
+<select id="volume">
+<option value="0.2">Sangat Kecil</option>
+<option value="0.5">Kecil</option>
+<option value="0.8">Sedang</option>
+<option value="1" selected>Keras</option>
+</select>
+
+<!-- PITCH -->
+<label>Pitch (1–9)</label>
+<select id="pitch">
+<option value="0.3">1 - Sangat Rendah</option>
+<option value="0.5">2</option>
+<option value="0.7">3</option>
+<option value="0.9">4</option>
+<option value="1" selected>5 - Normal</option>
+<option value="1.2">6</option>
+<option value="1.4">7</option>
+<option value="1.6">8</option>
+<option value="1.8">9 - Sangat Tinggi</option>
+</select>
+
+<!-- SPEED -->
+<label>Kecepatan</label>
+<select id="speed">
+<option value="0.4">Sangat Lambat</option>
+<option value="0.7">Lambat</option>
+<option value="1" selected>Normal</option>
+<option value="1.3">Cepat</option>
+<option value="1.7">Sangat Cepat</option>
+</select>
+
+<!-- EFEK -->
+<label>Efek Suara</label>
+<select id="efek">
+<option value="on" selected>ON</option>
+<option value="off">OFF</option>
+</select>
+
+<!-- MODE ANAK -->
+<label>Mode Anak</label>
+<select id="modeAnak">
+<option value="on">ON</option>
+<option value="off" selected>OFF</option>
+</select>
+
+<button class="test-btn" onclick="testSuara()">🔊 Test Suara</button>
+<button onclick="simpan()">💾 Simpan Pengaturan</button>
+
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
+const db=firebase.database();
+
+let voices = [];
+
+// LOAD VOICE
+function loadVoices(){
+voices = speechSynthesis.getVoices();
+let select = document.getElementById("voice");
+select.innerHTML = "";
+
+voices.forEach((v,i)=>{
+let opt = document.createElement("option");
+opt.value = i;
+opt.textContent = v.name + " (" + v.lang + ")";
+select.appendChild(opt);
+});
+}
+
+speechSynthesis.onvoiceschanged = loadVoices;
+
+// TEST SUARA
+function testSuara(){
+let pitch = parseFloat(document.getElementById("pitch").value);
+let speed = parseFloat(document.getElementById("speed").value);
+let volume = parseFloat(document.getElementById("volume").value);
+let voiceIndex = document.getElementById("voice").value;
+
+let msg = new SpeechSynthesisUtterance("ini contoh suara baju");
+msg.lang = "id-ID";
+msg.pitch = pitch;
+msg.rate = speed;
+msg.volume = volume;
+
+if(voices[voiceIndex]){
+msg.voice = voices[voiceIndex];
+}
+
+speechSynthesis.cancel();
+speechSynthesis.speak(msg);
+}
+
+// SIMPAN
+function simpan(){
+let data = {
+pitch: parseFloat(document.getElementById("pitch").value),
+speed: parseFloat(document.getElementById("speed").value),
+volume: parseFloat(document.getElementById("volume").value),
+voice: document.getElementById("voice").value,
+efek: document.getElementById("efek").value,
+modeAnak: document.getElementById("modeAnak").value
+};
+
+db.ref("config/game").set(data);
+
+alert("Pengaturan disimpan!");
+}
+
+// LOAD
+function loadSetting(){
+db.ref("config/game").once("value",snap=>{
+let s = snap.val();
+if(!s) return;
+
+if(s.pitch) document.getElementById("pitch").value = s.pitch;
+if(s.speed) document.getElementById("speed").value = s.speed;
+if(s.volume) document.getElementById("volume").value = s.volume;
+if(s.voice) document.getElementById("voice").value = s.voice;
+if(s.efek) document.getElementById("efek").value = s.efek;
+if(s.modeAnak) document.getElementById("modeAnak").value = s.modeAnak;
+});
+}
+
+window.onload = function(){
+loadVoices();
+setTimeout(loadSetting,500);
+};
+</script>
+
+</body>
+</html>
