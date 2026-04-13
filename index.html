@@ -3,149 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Huruf 2 Pemain Berhadapan</title>
+<title>Demo Suara TTS</title>
 
 <style>
 body {
     font-family: Arial;
     text-align: center;
     background: #f0f8ff;
-    margin: 0;
-}
-
-h1 {
-    margin: 10px;
-}
-
-#score {
-    font-size: 20px;
-    margin: 10px;
-}
-
-.area {
     padding: 20px;
 }
 
-.atas {
-    background: #d0f0ff;
-}
-
-.bawah {
-    background: #ffd0d0;
-    transform: rotate(180deg); /* INI KUNCI NYA */
-}
-
-.pilihan {
-    font-size: 40px;
-    width: 80px;
-    height: 80px;
+button, select {
+    padding: 10px;
     margin: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #4CAF50;
-    color: white;
+    font-size: 16px;
 }
 
-button {
-    cursor: pointer;
+h1 {
+    margin-bottom: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Game Huruf Berhadapan</h1>
+<h1>Demo Suara Kata: "BAJU"</h1>
 
-<div id="score">
-Atas: <span id="scoreAtas">0</span> |
-Bawah: <span id="scoreBawah">0</span>
+<div>
+    <label>Pilih Suara:</label><br>
+    <select id="voiceSelect"></select>
 </div>
 
-<button onclick="playSoal()">🔊 Dengarkan Soal</button>
-
-<!-- PEMAIN ATAS -->
-<div class="area atas">
-    <h2>👆 Pemain Atas</h2>
-    <div id="pilihanAtas"></div>
+<div>
+    <label>Kecepatan:</label><br>
+    <select id="speed">
+        <option value="0.3">Super Lambat</option>
+        <option value="0.5">Lambat</option>
+        <option value="0.7">Agak Lambat</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.3">Agak Cepat</option>
+        <option value="1.6">Cepat</option>
+        <option value="2">Super Cepat</option>
+    </select>
 </div>
 
-<!-- PEMAIN BAWAH (DIPUTAR) -->
-<div class="area bawah">
-    <h2>👇 Pemain Bawah</h2>
-    <div id="pilihanBawah"></div>
-</div>
+<br>
+
+<button onclick="bicara()">🔊 Ucapkan "Baju"</button>
 
 <script>
-let hurufList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-let hurufSoal = "";
+let voices = [];
 
-let scoreAtas = 0;
-let scoreBawah = 0;
+function loadVoices() {
+    voices = speechSynthesis.getVoices();
+    let select = document.getElementById("voiceSelect");
+    select.innerHTML = "";
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-function buatSoal() {
-    hurufSoal = hurufList[Math.floor(Math.random() * hurufList.length)];
-
-    let pilihan = [hurufSoal];
-
-    while (pilihan.length < 4) {
-        let h = hurufList[Math.floor(Math.random() * hurufList.length)];
-        if (!pilihan.includes(h)) pilihan.push(h);
-    }
-
-    shuffle(pilihan);
-
-    let htmlAtas = "";
-    let htmlBawah = "";
-
-    pilihan.forEach(h => {
-        htmlAtas += `<button class="pilihan" onclick="jawab('atas','${h}')">${h}</button>`;
-        htmlBawah += `<button class="pilihan" onclick="jawab('bawah','${h}')">${h}</button>`;
+    voices.forEach((voice, i) => {
+        let option = document.createElement("option");
+        option.value = i;
+        option.text = voice.name + " (" + voice.lang + ")";
+        select.appendChild(option);
     });
-
-    document.getElementById("pilihanAtas").innerHTML = htmlAtas;
-    document.getElementById("pilihanBawah").innerHTML = htmlBawah;
-
-    playSoal();
 }
 
-function playSoal() {
-    bicara("Manakah huruf " + hurufSoal);
-}
+speechSynthesis.onvoiceschanged = loadVoices;
 
-function jawab(pemain, jawaban) {
-    if (jawaban === hurufSoal) {
-        if (pemain === "atas") scoreAtas++;
-        else scoreBawah++;
+function bicara() {
+    let msg = new SpeechSynthesisUtterance("baju");
 
-        updateScore();
-        bicara("Selamat anda benar");
+    let selectedVoice = document.getElementById("voiceSelect").value;
+    let speed = document.getElementById("speed").value;
 
-        setTimeout(buatSoal, 1200);
-    } else {
-        bicara("Anda salah, coba lagi");
-    }
-}
+    msg.voice = voices[selectedVoice];
+    msg.rate = speed;
+    msg.pitch = 1;
 
-function updateScore() {
-    document.getElementById("scoreAtas").innerText = scoreAtas;
-    document.getElementById("scoreBawah").innerText = scoreBawah;
-}
-
-function bicara(teks) {
-    let msg = new SpeechSynthesisUtterance(teks);
-    msg.lang = "id-ID";
     speechSynthesis.speak(msg);
 }
-
-// mulai
-buatSoal();
 </script>
 
 </body>
