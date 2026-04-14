@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mengeja Interaktif</title>
+<title>Mengeja Level Lanjut</title>
 
 <style>
 body{
@@ -20,7 +20,7 @@ h1{margin-bottom:10px;}
 background:white;
 border-radius:15px;
 padding:20px;
-max-width:420px;
+max-width:450px;
 margin:auto;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
@@ -29,21 +29,21 @@ box-shadow:0 5px 15px rgba(0,0,0,0.1);
 display:flex;
 justify-content:center;
 align-items:center;
-gap:15px;
-font-size:45px;
-margin-bottom:15px;
+gap:10px;
+font-size:35px;
+flex-wrap:wrap;
 }
 
 .hasil{
-font-size:40px;
+font-size:35px;
 font-weight:bold;
 color:#1e3a8a;
-margin-top:10px;
+margin-top:15px;
 }
 
 .click{
 cursor:pointer;
-padding:10px;
+padding:8px;
 border-radius:10px;
 }
 
@@ -72,28 +72,33 @@ border:none;
 border-radius:10px;
 background:#f97316;
 color:white;
-font-size:16px;
 }
 
-button:active{
-transform:scale(0.9);
+.mode{
+margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Belajar Mengeja</h1>
+<h1>Mengeja Gabungan</h1>
 
 <div class="kotak">
 
 <div class="bar">
-<span id="konsonan" class="click" onclick="suaraHuruf(konsonan)">B</span>
+<span class="click" onclick="suara(teks1)">{{1}}</span>
 <span>+</span>
-<span id="vokalDisplay" class="click" onclick="suaraHuruf(vokal)">A</span>
+<span class="click" onclick="suara(teks2)">{{2}}</span>
 </div>
 
-<div id="hasil" class="hasil click" onclick="suaraGabung()">
+<div class="bar">
+<span class="click" onclick="suara(gabung1)" id="gabung1">BA</span>
+<span id="plus2" style="display:none;">+</span>
+<span class="click" onclick="suara(teks3)" id="teks3" style="display:none;">PI</span>
+</div>
+
+<div class="hasil click" onclick="suara(hasilAkhir)" id="hasil">
 BA
 </div>
 
@@ -105,9 +110,13 @@ BA
 <button onclick="pilihVokal('O')">O</button>
 </div>
 
+<div class="mode">
+<button onclick="gabungLanjut()">+ Gabung Lagi</button>
+<button onclick="reset()">Reset</button>
 </div>
 
-<!-- PILIH HURUF -->
+</div>
+
 <div class="huruf" id="hurufContainer"></div>
 
 <script>
@@ -120,21 +129,18 @@ let hurufList = [
 let konsonan = "B";
 let vokal = "A";
 
-// ================= SUARA LEBIH NATURAL =================
-// trik: pakai huruf kecil + bahasa indonesia
-function suaraHuruf(teks){
-let msg = new SpeechSynthesisUtterance(teks.toLowerCase());
-msg.lang = "id-ID";
-msg.rate = 0.8; // diperlambat biar jelas
-speechSynthesis.cancel();
-speechSynthesis.speak(msg);
-}
+let teks1 = "B";
+let teks2 = "A";
+let teks3 = "";
 
-// khusus gabungan biar tidak dieja
-function suaraGabung(){
-let kata = (konsonan + vokal).toLowerCase();
+let gabung1 = "BA";
+let hasilAkhir = "BA";
 
-let msg = new SpeechSynthesisUtterance(kata);
+let tahap2 = false;
+
+// ================= SUARA =================
+function suara(t){
+let msg = new SpeechSynthesisUtterance(t.toLowerCase());
 msg.lang = "id-ID";
 msg.rate = 0.7;
 speechSynthesis.cancel();
@@ -143,25 +149,63 @@ speechSynthesis.speak(msg);
 
 // ================= UPDATE =================
 function update(){
-document.getElementById("konsonan").innerText = konsonan;
-document.getElementById("vokalDisplay").innerText = vokal;
-document.getElementById("hasil").innerText = konsonan + vokal;
+teks1 = konsonan;
+teks2 = vokal;
+gabung1 = konsonan + vokal;
+
+if(!tahap2){
+hasilAkhir = gabung1;
+}
+
+document.getElementById("gabung1").innerText = gabung1;
+document.getElementById("hasil").innerText = hasilAkhir;
 }
 
 // ================= PILIH =================
 function pilihVokal(v){
 vokal = v;
 update();
-suaraHuruf(v);
+suara(v);
 }
 
 function pilihKonsonan(h){
 konsonan = h;
 update();
-suaraHuruf(h);
+suara(h);
 }
 
-// ================= GENERATE TOMBOL =================
+// ================= GABUNG LANJUT =================
+function gabungLanjut(){
+tahap2 = true;
+
+teks3 = konsonan + vokal;
+
+document.getElementById("teks3").style.display = "inline";
+document.getElementById("plus2").style.display = "inline";
+
+document.getElementById("teks3").innerText = teks3;
+
+hasilAkhir = gabung1 + teks3;
+
+document.getElementById("hasil").innerText = hasilAkhir;
+
+suara(teks3);
+setTimeout(()=>suara(hasilAkhir),700);
+}
+
+// ================= RESET =================
+function reset(){
+tahap2 = false;
+teks3 = "";
+hasilAkhir = gabung1;
+
+document.getElementById("teks3").style.display = "none";
+document.getElementById("plus2").style.display = "none";
+
+update();
+}
+
+// ================= TOMBOL HURUF =================
 let html="";
 hurufList.forEach(h=>{
 html += `<button onclick="pilihKonsonan('${h}')">${h}</button>`;
