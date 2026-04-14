@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Belajar Mengeja</title>
+<title>Mengeja Otomatis</title>
 
 <style>
 body{
@@ -11,22 +11,17 @@ font-family:Arial;
 text-align:center;
 background:#fff7ed;
 margin:0;
-padding:15px;
+padding:20px;
 }
 
-h1{
-margin-bottom:10px;
-}
-
-.container{
-max-width:400px;
-margin:auto;
-}
+h1{margin-bottom:10px;}
 
 .kotak{
 background:white;
 border-radius:15px;
-padding:20px;
+padding:25px;
+max-width:400px;
+margin:auto;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
@@ -35,42 +30,40 @@ display:flex;
 justify-content:center;
 align-items:center;
 gap:15px;
-font-size:40px;
-margin-bottom:15px;
-}
-
-.hasil{
-font-size:35px;
-font-weight:bold;
-color:#1e3a8a;
+font-size:45px;
 margin-bottom:20px;
 }
 
-.vokal{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
+.hasil{
+font-size:40px;
+font-weight:bold;
+color:#1e3a8a;
+margin-top:10px;
+}
+
+.clickable{
+cursor:pointer;
+padding:10px;
+border-radius:10px;
+}
+
+.clickable:active{
+transform:scale(0.9);
+background:#fde68a;
+}
+
+.control{
+margin-top:20px;
 }
 
 button{
-padding:15px;
-font-size:20px;
+padding:10px 15px;
+margin:5px;
 border:none;
 border-radius:10px;
-background:#f97316;
-color:white;
-}
-
-button:active{
-transform:scale(0.9);
-}
-
-.nav{
-margin-top:15px;
-}
-
-.nav button{
 background:#1e3a8a;
+color:white;
+font-size:16px;
 }
 </style>
 </head>
@@ -79,30 +72,21 @@ background:#1e3a8a;
 
 <h1>Belajar Mengeja</h1>
 
-<div class="container">
 <div class="kotak">
 
 <div class="bar">
-<span id="konsonan">B</span>
+<span id="konsonan" class="clickable" onclick="suaraHuruf(konsonan)">B</span>
 <span>+</span>
-<span id="vokalDisplay">A</span>
+<span id="vokal" class="clickable" onclick="suaraHuruf(vokal)">A</span>
 </div>
 
-<div class="hasil" id="hasil">BA</div>
-
-<div class="vokal">
-<button onclick="pilihVokal('A')">A</button>
-<button onclick="pilihVokal('I')">I</button>
-<button onclick="pilihVokal('U')">U</button>
-<button onclick="pilihVokal('E')">E</button>
-<button onclick="pilihVokal('O')">O</button>
+<div id="hasil" class="hasil clickable" onclick="suaraHuruf(konsonan+vokal)">
+BA
 </div>
 
-</div>
-
-<div class="nav">
-<button onclick="prevHuruf()">⬅️</button>
-<button onclick="nextHuruf()">➡️</button>
+<div class="control">
+<button onclick="startAuto()">▶️ Mulai</button>
+<button onclick="stopAuto()">⏸️ Stop</button>
 </div>
 
 </div>
@@ -114,29 +98,86 @@ let hurufList = [
 "N","P","Q","R","S","T","V","W","X","Y","Z"
 ];
 
-let index = 0;
-let konsonan = hurufList[index];
-let vokal = "A";
+let vokalList = ["A","I","U","E","O"];
+
+let i = 0;
+let j = 0;
+
+let konsonan = hurufList[i];
+let vokal = vokalList[j];
+
+let jalan = false;
 
 // ================= SUARA =================
-function bicara(teks){
+function suaraHuruf(teks){
 let msg = new SpeechSynthesisUtterance(teks);
 msg.lang = "id-ID";
+speechSynthesis.cancel();
 speechSynthesis.speak(msg);
 }
 
 // ================= UPDATE =================
 function update(){
 document.getElementById("konsonan").innerText = konsonan;
-document.getElementById("vokalDisplay").innerText = vokal;
+document.getElementById("vokal").innerText = vokal;
 document.getElementById("hasil").innerText = konsonan + vokal;
 }
 
-// ================= PILIH VOKAL =================
-function pilihVokal(v){
-vokal = v;
+// ================= AUTO JALAN =================
+function loop(){
+
+if(!jalan) return;
+
 update();
 
-bicara(konsonan);
-setTimeout(()=>bicara(vokal),500);
-setTimeout
+// urutan suara: B → A → BA
+suaraHuruf(konsonan);
+
+setTimeout(()=>{
+suaraHuruf(vokal);
+},700);
+
+setTimeout(()=>{
+suaraHuruf(konsonan+vokal);
+},1400);
+
+// lanjut ke berikutnya
+setTimeout(()=>{
+
+j++;
+
+if(j >= vokalList.length){
+j = 0;
+i++;
+
+if(i >= hurufList.length){
+i = 0;
+}
+}
+
+konsonan = hurufList[i];
+vokal = vokalList[j];
+
+loop();
+
+},2500);
+
+}
+
+// ================= CONTROL =================
+function startAuto(){
+jalan = true;
+loop();
+}
+
+function stopAuto(){
+jalan = false;
+speechSynthesis.cancel();
+}
+
+// start awal
+update();
+</script>
+
+</body>
+</html>
