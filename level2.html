@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mengeja Level Lanjut</title>
+<title>Mengeja Gabungan Fix</title>
 
 <style>
 body{
@@ -30,8 +30,9 @@ display:flex;
 justify-content:center;
 align-items:center;
 gap:10px;
-font-size:35px;
+font-size:30px;
 flex-wrap:wrap;
+margin-bottom:10px;
 }
 
 .hasil{
@@ -56,7 +57,7 @@ background:#fde68a;
 display:flex;
 justify-content:center;
 gap:10px;
-margin-top:15px;
+margin-top:10px;
 }
 
 .huruf{
@@ -86,21 +87,26 @@ margin-top:10px;
 
 <div class="kotak">
 
+<!-- SLOT 1 -->
 <div class="bar">
-<span class="click" onclick="suara(teks1)">{{1}}</span>
+<span class="click" onclick="suara(k1)">{{k1}}</span>
 <span>+</span>
-<span class="click" onclick="suara(teks2)">{{2}}</span>
+<span class="click" onclick="suara(v1)">{{v1}}</span>
+<span>=</span>
+<span class="click" onclick="suara(suku1)" id="suku1">BA</span>
 </div>
 
-<div class="bar">
-<span class="click" onclick="suara(gabung1)" id="gabung1">BA</span>
-<span id="plus2" style="display:none;">+</span>
-<span class="click" onclick="suara(teks3)" id="teks3" style="display:none;">PI</span>
+<!-- SLOT 2 -->
+<div class="bar" id="slot2" style="display:none;">
+<span class="click" onclick="suara(k2)">{{k2}}</span>
+<span>+</span>
+<span class="click" onclick="suara(v2)">{{v2}}</span>
+<span>=</span>
+<span class="click" onclick="suara(suku2)" id="suku2">PI</span>
 </div>
 
-<div class="hasil click" onclick="suara(hasilAkhir)" id="hasil">
-BA
-</div>
+<!-- HASIL -->
+<div class="hasil click" onclick="suara(hasil)" id="hasil">BA</div>
 
 <div class="vokal">
 <button onclick="pilihVokal('A')">A</button>
@@ -111,7 +117,7 @@ BA
 </div>
 
 <div class="mode">
-<button onclick="gabungLanjut()">+ Gabung Lagi</button>
+<button onclick="aktifkanSlot2()">+ Gabung Lagi</button>
 <button onclick="reset()">Reset</button>
 </div>
 
@@ -126,21 +132,19 @@ let hurufList = [
 "N","P","Q","R","S","T","V","W","X","Y","Z"
 ];
 
-let konsonan = "B";
-let vokal = "A";
+// SLOT 1
+let k1="B", v1="A", suku1="BA";
 
-let teks1 = "B";
-let teks2 = "A";
-let teks3 = "";
+// SLOT 2
+let k2="", v2="", suku2="";
 
-let gabung1 = "BA";
-let hasilAkhir = "BA";
-
-let tahap2 = false;
+// MODE
+let aktifSlot = 1;
 
 // ================= SUARA =================
-function suara(t){
-let msg = new SpeechSynthesisUtterance(t.toLowerCase());
+function suara(teks){
+if(!teks) return;
+let msg = new SpeechSynthesisUtterance(teks.toLowerCase());
 msg.lang = "id-ID";
 msg.rate = 0.7;
 speechSynthesis.cancel();
@@ -149,58 +153,61 @@ speechSynthesis.speak(msg);
 
 // ================= UPDATE =================
 function update(){
-teks1 = konsonan;
-teks2 = vokal;
-gabung1 = konsonan + vokal;
 
-if(!tahap2){
-hasilAkhir = gabung1;
+suku1 = k1 + v1;
+document.getElementById("suku1").innerText = suku1;
+
+if(aktifSlot === 1){
+document.getElementById("hasil").innerText = suku1;
 }
 
-document.getElementById("gabung1").innerText = gabung1;
-document.getElementById("hasil").innerText = hasilAkhir;
+if(aktifSlot === 2){
+suku2 = k2 + v2;
+document.getElementById("suku2").innerText = suku2;
+
+let hasilGabung = suku1 + suku2;
+document.getElementById("hasil").innerText = hasilGabung;
+}
 }
 
 // ================= PILIH =================
-function pilihVokal(v){
-vokal = v;
-update();
-suara(v);
+function pilihKonsonan(h){
+
+if(aktifSlot === 1){
+k1 = h;
+}else{
+k2 = h;
 }
 
-function pilihKonsonan(h){
-konsonan = h;
 update();
 suara(h);
 }
 
-// ================= GABUNG LANJUT =================
-function gabungLanjut(){
-tahap2 = true;
+function pilihVokal(v){
 
-teks3 = konsonan + vokal;
+if(aktifSlot === 1){
+v1 = v;
+}else{
+v2 = v;
+}
 
-document.getElementById("teks3").style.display = "inline";
-document.getElementById("plus2").style.display = "inline";
+update();
+suara(v);
+}
 
-document.getElementById("teks3").innerText = teks3;
-
-hasilAkhir = gabung1 + teks3;
-
-document.getElementById("hasil").innerText = hasilAkhir;
-
-suara(teks3);
-setTimeout(()=>suara(hasilAkhir),700);
+// ================= SLOT 2 =================
+function aktifkanSlot2(){
+aktifSlot = 2;
+document.getElementById("slot2").style.display = "flex";
 }
 
 // ================= RESET =================
 function reset(){
-tahap2 = false;
-teks3 = "";
-hasilAkhir = gabung1;
+k1="B"; v1="A";
+k2=""; v2="";
+aktifSlot = 1;
 
-document.getElementById("teks3").style.display = "none";
-document.getElementById("plus2").style.display = "none";
+document.getElementById("slot2").style.display = "none";
 
 update();
 }
