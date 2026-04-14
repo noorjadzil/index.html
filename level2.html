@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mengeja Gabungan Fix</title>
+<title>Mengeja Rapi</title>
 
 <style>
 body{
@@ -11,7 +11,7 @@ font-family:Arial;
 text-align:center;
 background:#fff7ed;
 margin:0;
-padding:15px;
+padding:20px;
 }
 
 h1{margin-bottom:10px;}
@@ -20,44 +20,38 @@ h1{margin-bottom:10px;}
 background:white;
 border-radius:15px;
 padding:20px;
-max-width:450px;
+max-width:420px;
 margin:auto;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
-.bar{
-display:flex;
-justify-content:center;
-align-items:center;
-gap:10px;
-font-size:30px;
-flex-wrap:wrap;
+.gabungan{
+font-size:35px;
 margin-bottom:10px;
 }
 
 .hasil{
-font-size:35px;
+font-size:40px;
 font-weight:bold;
 color:#1e3a8a;
-margin-top:15px;
 }
 
 .click{
 cursor:pointer;
-padding:8px;
+padding:8px 12px;
 border-radius:10px;
 }
 
 .click:active{
-transform:scale(0.9);
 background:#fde68a;
+transform:scale(0.9);
 }
 
 .vokal{
 display:flex;
 justify-content:center;
 gap:10px;
-margin-top:10px;
+margin-top:15px;
 }
 
 .huruf{
@@ -74,39 +68,24 @@ border-radius:10px;
 background:#f97316;
 color:white;
 }
-
-.mode{
-margin-top:10px;
-}
 </style>
 </head>
 
 <body>
 
-<h1>Mengeja Gabungan</h1>
+<h1>Mengeja</h1>
 
 <div class="kotak">
 
-<!-- SLOT 1 -->
-<div class="bar">
-<span class="click" onclick="suara(k1)">{{k1}}</span>
-<span>+</span>
-<span class="click" onclick="suara(v1)">{{v1}}</span>
-<span>=</span>
-<span class="click" onclick="suara(suku1)" id="suku1">BA</span>
+<div class="gabungan">
+<span id="suku1" class="click" onclick="suara(suku1)">BA</span>
++
+<span id="suku2" class="click" onclick="suara(suku2)">PI</span>
 </div>
 
-<!-- SLOT 2 -->
-<div class="bar" id="slot2" style="display:none;">
-<span class="click" onclick="suara(k2)">{{k2}}</span>
-<span>+</span>
-<span class="click" onclick="suara(v2)">{{v2}}</span>
-<span>=</span>
-<span class="click" onclick="suara(suku2)" id="suku2">PI</span>
+<div id="hasil" class="hasil click" onclick="suaraGabung()">
+BAPI
 </div>
-
-<!-- HASIL -->
-<div class="hasil click" onclick="suara(hasil)" id="hasil">BA</div>
 
 <div class="vokal">
 <button onclick="pilihVokal('A')">A</button>
@@ -114,11 +93,6 @@ margin-top:10px;
 <button onclick="pilihVokal('U')">U</button>
 <button onclick="pilihVokal('E')">E</button>
 <button onclick="pilihVokal('O')">O</button>
-</div>
-
-<div class="mode">
-<button onclick="aktifkanSlot2()">+ Gabung Lagi</button>
-<button onclick="reset()">Reset</button>
 </div>
 
 </div>
@@ -132,14 +106,14 @@ let hurufList = [
 "N","P","Q","R","S","T","V","W","X","Y","Z"
 ];
 
-// SLOT 1
+// suku 1
 let k1="B", v1="A", suku1="BA";
 
-// SLOT 2
-let k2="", v2="", suku2="";
+// suku 2
+let k2="P", v2="I", suku2="PI";
 
-// MODE
-let aktifSlot = 1;
+// mode pilih
+let mode = 1;
 
 // ================= SUARA =================
 function suara(teks){
@@ -151,65 +125,49 @@ speechSynthesis.cancel();
 speechSynthesis.speak(msg);
 }
 
+// suara gabungan (lebih halus)
+function suaraGabung(){
+let kata = (suku1 + suku2).toLowerCase();
+let msg = new SpeechSynthesisUtterance(kata);
+msg.lang = "id-ID";
+msg.rate = 0.65;
+speechSynthesis.cancel();
+speechSynthesis.speak(msg);
+}
+
 // ================= UPDATE =================
 function update(){
-
 suku1 = k1 + v1;
-document.getElementById("suku1").innerText = suku1;
-
-if(aktifSlot === 1){
-document.getElementById("hasil").innerText = suku1;
-}
-
-if(aktifSlot === 2){
 suku2 = k2 + v2;
-document.getElementById("suku2").innerText = suku2;
 
-let hasilGabung = suku1 + suku2;
-document.getElementById("hasil").innerText = hasilGabung;
-}
+document.getElementById("suku1").innerText = suku1;
+document.getElementById("suku2").innerText = suku2;
+document.getElementById("hasil").innerText = suku1 + suku2;
 }
 
 // ================= PILIH =================
 function pilihKonsonan(h){
-
-if(aktifSlot === 1){
+if(mode===1){
 k1 = h;
+mode = 2;
 }else{
 k2 = h;
+mode = 1;
 }
-
 update();
 suara(h);
 }
 
 function pilihVokal(v){
-
-if(aktifSlot === 1){
+if(mode===1){
 v1 = v;
+mode = 2;
 }else{
 v2 = v;
+mode = 1;
 }
-
 update();
 suara(v);
-}
-
-// ================= SLOT 2 =================
-function aktifkanSlot2(){
-aktifSlot = 2;
-document.getElementById("slot2").style.display = "flex";
-}
-
-// ================= RESET =================
-function reset(){
-k1="B"; v1="A";
-k2=""; v2="";
-aktifSlot = 1;
-
-document.getElementById("slot2").style.display = "none";
-
-update();
 }
 
 // ================= TOMBOL HURUF =================
