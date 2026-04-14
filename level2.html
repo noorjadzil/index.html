@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mengeja Otomatis</title>
+<title>Mengeja Interaktif</title>
 
 <style>
 body{
@@ -11,7 +11,7 @@ font-family:Arial;
 text-align:center;
 background:#fff7ed;
 margin:0;
-padding:20px;
+padding:15px;
 }
 
 h1{margin-bottom:10px;}
@@ -19,8 +19,8 @@ h1{margin-bottom:10px;}
 .kotak{
 background:white;
 border-radius:15px;
-padding:25px;
-max-width:400px;
+padding:20px;
+max-width:420px;
 margin:auto;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
@@ -31,7 +31,7 @@ justify-content:center;
 align-items:center;
 gap:15px;
 font-size:45px;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .hasil{
@@ -41,29 +41,42 @@ color:#1e3a8a;
 margin-top:10px;
 }
 
-.clickable{
+.click{
 cursor:pointer;
 padding:10px;
 border-radius:10px;
 }
 
-.clickable:active{
+.click:active{
 transform:scale(0.9);
 background:#fde68a;
 }
 
-.control{
+.vokal{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:15px;
+}
+
+.huruf{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:8px;
 margin-top:20px;
 }
 
 button{
-padding:10px 15px;
-margin:5px;
+padding:10px;
 border:none;
 border-radius:10px;
-background:#1e3a8a;
+background:#f97316;
 color:white;
 font-size:16px;
+}
+
+button:active{
+transform:scale(0.9);
 }
 </style>
 </head>
@@ -75,21 +88,27 @@ font-size:16px;
 <div class="kotak">
 
 <div class="bar">
-<span id="konsonan" class="clickable" onclick="suaraHuruf(konsonan)">B</span>
+<span id="konsonan" class="click" onclick="suaraHuruf(konsonan)">B</span>
 <span>+</span>
-<span id="vokal" class="clickable" onclick="suaraHuruf(vokal)">A</span>
+<span id="vokalDisplay" class="click" onclick="suaraHuruf(vokal)">A</span>
 </div>
 
-<div id="hasil" class="hasil clickable" onclick="suaraHuruf(konsonan+vokal)">
+<div id="hasil" class="hasil click" onclick="suaraGabung()">
 BA
 </div>
 
-<div class="control">
-<button onclick="startAuto()">▶️ Mulai</button>
-<button onclick="stopAuto()">⏸️ Stop</button>
+<div class="vokal">
+<button onclick="pilihVokal('A')">A</button>
+<button onclick="pilihVokal('I')">I</button>
+<button onclick="pilihVokal('U')">U</button>
+<button onclick="pilihVokal('E')">E</button>
+<button onclick="pilihVokal('O')">O</button>
 </div>
 
 </div>
+
+<!-- PILIH HURUF -->
+<div class="huruf" id="hurufContainer"></div>
 
 <script>
 // ================= DATA =================
@@ -98,20 +117,26 @@ let hurufList = [
 "N","P","Q","R","S","T","V","W","X","Y","Z"
 ];
 
-let vokalList = ["A","I","U","E","O"];
+let konsonan = "B";
+let vokal = "A";
 
-let i = 0;
-let j = 0;
-
-let konsonan = hurufList[i];
-let vokal = vokalList[j];
-
-let jalan = false;
-
-// ================= SUARA =================
+// ================= SUARA LEBIH NATURAL =================
+// trik: pakai huruf kecil + bahasa indonesia
 function suaraHuruf(teks){
-let msg = new SpeechSynthesisUtterance(teks);
+let msg = new SpeechSynthesisUtterance(teks.toLowerCase());
 msg.lang = "id-ID";
+msg.rate = 0.8; // diperlambat biar jelas
+speechSynthesis.cancel();
+speechSynthesis.speak(msg);
+}
+
+// khusus gabungan biar tidak dieja
+function suaraGabung(){
+let kata = (konsonan + vokal).toLowerCase();
+
+let msg = new SpeechSynthesisUtterance(kata);
+msg.lang = "id-ID";
+msg.rate = 0.7;
 speechSynthesis.cancel();
 speechSynthesis.speak(msg);
 }
@@ -119,63 +144,31 @@ speechSynthesis.speak(msg);
 // ================= UPDATE =================
 function update(){
 document.getElementById("konsonan").innerText = konsonan;
-document.getElementById("vokal").innerText = vokal;
+document.getElementById("vokalDisplay").innerText = vokal;
 document.getElementById("hasil").innerText = konsonan + vokal;
 }
 
-// ================= AUTO JALAN =================
-function loop(){
-
-if(!jalan) return;
-
+// ================= PILIH =================
+function pilihVokal(v){
+vokal = v;
 update();
-
-// urutan suara: B → A → BA
-suaraHuruf(konsonan);
-
-setTimeout(()=>{
-suaraHuruf(vokal);
-},700);
-
-setTimeout(()=>{
-suaraHuruf(konsonan+vokal);
-},1400);
-
-// lanjut ke berikutnya
-setTimeout(()=>{
-
-j++;
-
-if(j >= vokalList.length){
-j = 0;
-i++;
-
-if(i >= hurufList.length){
-i = 0;
-}
+suaraHuruf(v);
 }
 
-konsonan = hurufList[i];
-vokal = vokalList[j];
-
-loop();
-
-},2500);
-
+function pilihKonsonan(h){
+konsonan = h;
+update();
+suaraHuruf(h);
 }
 
-// ================= CONTROL =================
-function startAuto(){
-jalan = true;
-loop();
-}
+// ================= GENERATE TOMBOL =================
+let html="";
+hurufList.forEach(h=>{
+html += `<button onclick="pilihKonsonan('${h}')">${h}</button>`;
+});
+document.getElementById("hurufContainer").innerHTML = html;
 
-function stopAuto(){
-jalan = false;
-speechSynthesis.cancel();
-}
-
-// start awal
+// start
 update();
 </script>
 
