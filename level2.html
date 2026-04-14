@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Level 2 - Mengeja</title>
+<title>Belajar Mengeja</title>
 
 <style>
 body{
@@ -11,257 +11,132 @@ font-family:Arial;
 text-align:center;
 background:#fff7ed;
 margin:0;
-padding:10px;
+padding:15px;
 }
 
-h1{margin:10px;}
-
-#score{
-font-size:18px;
-margin:10px;
-}
-
-#stars{
-font-size:25px;
-color:gold;
+h1{
 margin-bottom:10px;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-max-width:300px;
+.container{
+max-width:400px;
 margin:auto;
 }
 
-.pilihan{
-font-size:20px;
-padding:15px;
-border-radius:12px;
-border:none;
-background:#f97316;
-color:white;
-transition:0.2s;
+.kotak{
+background:white;
+border-radius:15px;
+padding:20px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
-.pilihan:active{
-transform:scale(0.9);
+.bar{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+font-size:40px;
+margin-bottom:15px;
 }
 
-.benar{
-background:green !important;
-animation:pop 0.3s;
+.hasil{
+font-size:35px;
+font-weight:bold;
+color:#1e3a8a;
+margin-bottom:20px;
 }
 
-.salah{
-background:red !important;
-animation:shake 0.3s;
-}
-
-@keyframes pop{
-0%{transform:scale(0.5);}
-100%{transform:scale(1);}
-}
-
-@keyframes shake{
-0%{transform:translateX(0);}
-25%{transform:translateX(-5px);}
-50%{transform:translateX(5px);}
-75%{transform:translateX(-5px);}
-100%{transform:translateX(0);}
+.vokal{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
 }
 
 button{
-padding:10px;
-margin:5px;
+padding:15px;
+font-size:20px;
 border:none;
-border-radius:8px;
-background:#1e3a8a;
+border-radius:10px;
+background:#f97316;
 color:white;
 }
 
-.menu{
+button:active{
+transform:scale(0.9);
+}
+
+.nav{
 margin-top:15px;
+}
+
+.nav button{
+background:#1e3a8a;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Level 2 - Mengeja</h1>
+<h1>Belajar Mengeja</h1>
 
-<div id="score">Skor: 0</div>
-<div id="stars">⭐</div>
+<div class="container">
+<div class="kotak">
 
-<button onclick="playSoal()">🔊 Ulangi</button>
-
-<div class="grid" id="pilihan"></div>
-
-<div class="menu">
-<button onclick="location.href='index.html'">⬅️ Level 1</button>
-<button onclick="location.href='pengaturan.html'">⚙️ Pengaturan</button>
+<div class="bar">
+<span id="konsonan">B</span>
+<span>+</span>
+<span id="vokalDisplay">A</span>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<div class="hasil" id="hasil">BA</div>
+
+<div class="vokal">
+<button onclick="pilihVokal('A')">A</button>
+<button onclick="pilihVokal('I')">I</button>
+<button onclick="pilihVokal('U')">U</button>
+<button onclick="pilihVokal('E')">E</button>
+<button onclick="pilihVokal('O')">O</button>
+</div>
+
+</div>
+
+<div class="nav">
+<button onclick="prevHuruf()">⬅️</button>
+<button onclick="nextHuruf()">➡️</button>
+</div>
+
+</div>
 
 <script>
-firebase.initializeApp({
-databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
-});
-const db=firebase.database();
+// ================= DATA =================
+let hurufList = [
+"B","C","D","F","G","H","J","K","L","M",
+"N","P","Q","R","S","T","V","W","X","Y","Z"
+];
 
-// ================= SETTING =================
-let gameSetting={pitch:1,speed:1,volume:1,voice:null};
-let voices=[];
-
-speechSynthesis.onvoiceschanged=()=>voices=speechSynthesis.getVoices();
-
-db.ref("config/game").on("value",snap=>{
-let s=snap.val();
-if(s) gameSetting=s;
-});
+let index = 0;
+let konsonan = hurufList[index];
+let vokal = "A";
 
 // ================= SUARA =================
-function bicara(teks,delay=0){
-setTimeout(()=>{
-let msg=new SpeechSynthesisUtterance(teks);
-msg.pitch=gameSetting.pitch||1;
-msg.rate=gameSetting.speed||1;
-msg.volume=gameSetting.volume||1;
-if(voices[gameSetting.voice]) msg.voice=voices[gameSetting.voice];
+function bicara(teks){
+let msg = new SpeechSynthesisUtterance(teks);
+msg.lang = "id-ID";
 speechSynthesis.speak(msg);
-},delay);
 }
 
-// ================= DATA KATA =================
-let kataList=["BAJU","SAPI","MEJA","BOLA","KAKI","ROTI","BUKU"];
-
-let jawaban="";
-let skor=0;
-let streak=0;
-
-// ================= BUAT SOAL =================
-function buatSoal(){
-
-jawaban=kataList[Math.floor(Math.random()*kataList.length)];
-
-let pilihan=[jawaban];
-
-while(pilihan.length<4){
-let k=kataList[Math.floor(Math.random()*kataList.length)];
-if(!pilihan.includes(k)) pilihan.push(k);
+// ================= UPDATE =================
+function update(){
+document.getElementById("konsonan").innerText = konsonan;
+document.getElementById("vokalDisplay").innerText = vokal;
+document.getElementById("hasil").innerText = konsonan + vokal;
 }
 
-pilihan.sort(()=>Math.random()-0.5);
+// ================= PILIH VOKAL =================
+function pilihVokal(v){
+vokal = v;
+update();
 
-let html="";
-pilihan.forEach(k=>{
-html+=`<button class="pilihan" onclick="jawabSoal('${k}',this)">${k}</button>`;
-});
-
-document.getElementById("pilihan").innerHTML=html;
-
-playSoal();
-}
-
-// ================= SUARA SOAL =================
-function playSoal(){
-
-let huruf1=jawaban[0];
-let huruf2=jawaban[1];
-let huruf3=jawaban[2];
-let huruf4=jawaban[3]||"";
-
-// contoh: B A BA
-bicara(huruf1);
-bicara(huruf2,800);
-bicara(huruf1+huruf2,1600);
-
-// lanjut suku kata kedua
-if(huruf3){
-bicara(huruf3,2500);
-}
-
-if(huruf4){
-bicara(huruf4,3300);
-bicara(huruf3+huruf4,4100);
-}
-
-// kata lengkap
-bicara(jawaban,5200);
-}
-
-// ================= JAWAB =================
-function jawabSoal(jawab,el){
-
-if(jawab===jawaban){
-
-el.classList.add("benar");
-skor++;
-streak++;
-
-updateScore();
-
-suaraBenar();
-
-setTimeout(buatSoal,2000);
-
-}else{
-
-el.classList.add("salah");
-streak=0;
-
-suaraSalah();
-}
-}
-
-// ================= SUARA =================
-function suaraSalah(){
-let v=[
-["Anda salah","coba lagi"],
-["Kamu salah","ayo coba lagi"],
-["Ups salah","coba lagi ya"]
-];
-
-let pilih=v[Math.floor(Math.random()*v.length)];
-
-bicara(pilih[0]);
-bicara(pilih[1],1000);
-}
-
-function suaraBenar(){
-let v=[
-["Anda benar","hebat"],
-["Bagus sekali","kamu benar"],
-["Wow","benar"]
-];
-
-let pilih=v[Math.floor(Math.random()*v.length)];
-
-bicara(pilih[0]);
-bicara(pilih[1],1000);
-
-if(streak>=5){
-bicara("sempurna",2000);
-}
-}
-
-// ================= SCORE =================
-function updateScore(){
-document.getElementById("score").innerText="Skor: "+skor;
-
-let bintang="⭐";
-if(skor>5) bintang="⭐⭐";
-if(skor>10) bintang="⭐⭐⭐";
-
-document.getElementById("stars").innerText=bintang;
-}
-
-// mulai
-setTimeout(buatSoal,500);
-</script>
-
-</body>
-</html>
+bicara(konsonan);
+setTimeout(()=>bicara(vokal),500);
+setTimeout
